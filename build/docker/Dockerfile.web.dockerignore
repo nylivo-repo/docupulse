@@ -1,0 +1,4 @@
+**
+!frontend/dist/**
+!build/docker/nginx/**
+**/.DS_Store

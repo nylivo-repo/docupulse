@@ -1,0 +1,86 @@
+# DocuPulse IDP on a NAS or any Docker host (Linux x86-64). Two containers:
+#   web  Nginx: HTTPS, serves the web UI, forwards /api, /docs and /openapi.json to the API
+#   api  the FastAPI server (Python 3.12) with SQLite and documents in data/storage
+# Everything that must survive an upgrade lives in ./data next to this file:
+#   data/config   server.ini, database.ini, auth.ini (created on first start; edit, then restart)
+#   data/storage  documents, page images, the SQLite database, secret.key, logs,
+#                 and on first start initial_admin_password.txt
+#   data/certs    server.crt + server.key (self-signed one created if missing)
+# Settings are in .env (copy .env.example). Start: docker compose up -d
+name: docupulse-idp
+
+services:
+  api:
+    image: docupulse-idp-api:${IDP_VERSION:-latest}
+    pull_policy: never   # images come from the bundle (docker load); the NAS needs no internet
+    container_name: docupulse-idp-api
+    restart: unless-stopped
+    environment:
+      PUID: ${PUID:-1000}
+      PGID: ${PGID:-1000}
+      IDP_HOST: 0.0.0.0
+      IDP_PORT: "8000"
+      IDP_SERVE_FRONTEND: "false"     # web serves the UI
+      IDP_TRUSTED_PROXIES: ${IDP_WEB_IP:-172.30.80.10}   # only the web container may set X-Forwarded-*
+      TZ: ${TZ:-UTC}
+    volumes:
+      - ./data/config:/app/backend/config
+      - ./data/storage:/app/backend/storage
+    networks:
+      idp:
+        ipv4_address: ${IDP_API_IP:-172.30.80.11}
+    # no published port: only reachable through web
+
+  web:
+    image: docupulse-idp-web:${IDP_VERSION:-latest}
+    pull_policy: never   # images come from the bundle (docker load); the NAS needs no internet
+    container_name: docupulse-idp-web
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    environment:
+      API_UPSTREAM: api:8000
+      HTTPS_PORT: ${HTTPS_PORT:-7443}
+      MAX_BODY_MB: ${MAX_BODY_MB:-30}
+      HSTS_HEADER: ${HSTS_HEADER:-}
+      TLS_SUBJECT_ALT_NAMES: ${TLS_SUBJECT_ALT_NAMES:-}
+      TUNNEL_IP: ${IDP_TUNNEL_IP:-172.30.80.12}
+      TZ: ${TZ:-UTC}
+    ports:
+      - "${HTTPS_PORT:-7443}:443"
+      - "${HTTP_PORT:-7080}:80"
+    volumes:
+      - ./data/certs:/etc/nginx/certs
+      # Optional: edit the UI settings or branding without a rebuild (copy them out of the image first,
+      # see /docs section 11.10):
+      # - ./data/web/config.js:/usr/share/nginx/html/config.js:ro
+      # - ./data/web/branding:/usr/share/nginx/html/branding:ro
+    networks:
+      idp:
+        ipv4_address: ${IDP_WEB_IP:-172.30.80.10}
+
+  # Optional public access for testing, through a Cloudflare tunnel of its own (no port opened on the router).
+  # Off unless started with the "public" profile:  docker compose --profile public up -d
+  # In Cloudflare Zero Trust: Networks > Tunnels > Create (cloudflared), copy the token into .env
+  # (CLOUDFLARE_TUNNEL_TOKEN), and add a public hostname -> service https://web:443 with "No TLS Verify" on.
+  tunnel:
+    image: ${CLOUDFLARED_IMAGE:-cloudflare/cloudflared:latest}
+    container_name: docupulse-idp-tunnel
+    profiles: ["public"]
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN:-}
+    depends_on:
+      - web
+    networks:
+      idp:
+        ipv4_address: ${IDP_TUNNEL_IP:-172.30.80.12}
+
+networks:
+  idp:
+    name: docupulse-idp
+    ipam:
+      config:
+        - subnet: ${IDP_SUBNET:-172.30.80.0/24}

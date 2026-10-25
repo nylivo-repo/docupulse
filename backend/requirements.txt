@@ -1,0 +1,24 @@
+# DocuPulse IDP API. Python 3.11 or 3.12 (3.12 recommended). Pinned versions, checked with
+# pip-audit on 2026-10-24: no known vulnerabilities. Re-check before each release:
+#   pip install pip-audit && pip-audit -r backend/requirements.txt
+fastapi==0.162.0
+starlette==1.10.0
+uvicorn==0.54.0
+python-multipart==0.0.32
+pydantic==2.14.1
+httpx==0.28.1
+pdfplumber==0.11.10
+pypdfium2==5.14.0
+pillow==13.0.0
+reportlab==5.1.0
+# Encrypts stored sign-in secrets (Okta client secret, directory bind password)
+cryptography==50.0.2
+# Offline OCR for scanned PDFs and photos (models ship inside the wheel)
+rapidocr-onnxruntime==1.4.4
+onnxruntime==1.31.0
+numpy==2.5.4
+# Active Directory / LDAP sign-in (pure Python)
+ldap3==2.9.1
+# Database drivers: uncomment the one your server uses (SQLite needs none)
+# pymssql            # SQL Server
+# psycopg[binary]    # PostgreSQL

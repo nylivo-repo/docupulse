@@ -1,0 +1,56 @@
+# DocuPulse IDP behind Nginx. ${...} values come from the container environment (docker-compose.yml / .env).
+server_tokens off;
+
+# HSTS only with a trusted certificate (HSTS_HEADER in .env); an empty value sends no header
+map "" $idp_hsts { default "${HSTS_HEADER}"; }
+
+# Plain HTTP only redirects to HTTPS
+server {
+    listen 80 default_server;
+    return 301 https://$host:${HTTPS_PORT}$request_uri;
+}
+
+server {
+    listen 443 ssl default_server;
+    http2 on;
+    ssl_certificate     /etc/nginx/certs/server.crt;
+    ssl_certificate_key /etc/nginx/certs/server.key;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_session_cache shared:SSL:10m;
+
+    # Uploads: keep above [storage] max_upload_mb in server.ini
+    client_max_body_size ${MAX_BODY_MB}m;
+    root /usr/share/nginx/html;
+
+    # Public access through the optional Cloudflare tunnel container: requests from it carry the visitor's
+    # address in CF-Connecting-IP, used for logs and sign-in lockouts. Nobody else can set it.
+    set_real_ip_from ${TUNNEL_IP};
+    real_ip_header CF-Connecting-IP;
+
+    # API, technical documentation and OpenAPI spec: the API sets its own security headers
+    location ~ ^/(api/|docs$|openapi\.json$) {
+        proxy_pass http://${API_UPSTREAM};
+        proxy_http_version 1.1;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_set_header X-Request-ID $request_id;
+        proxy_read_timeout 300s;   # large scanned PDFs take a while to OCR
+        proxy_send_timeout 300s;
+        proxy_hide_header Strict-Transport-Security;
+        add_header Strict-Transport-Security $idp_hsts always;
+    }
+
+    # Editable settings, service-worker files and replaceable branding: never cached
+    location ~ ^/(config\.js|ngsw-worker\.js|ngsw\.json|safety-worker\.js|manifest\.webmanifest|index\.html|branding/.*)$ {
+        include /etc/nginx/snippets/ui-headers.conf;
+        add_header Cache-Control "no-cache" always;
+        try_files $uri =404;
+    }
+
+    # The Angular app: real files, otherwise index.html (client-side routes)
+    location / {
+        include /etc/nginx/snippets/ui-headers.conf;
+        try_files $uri /index.html;
+    }
+}

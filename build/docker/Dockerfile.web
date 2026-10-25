@@ -1,0 +1,19 @@
+# DocuPulse IDP web image: Nginx serves the built Angular UI over HTTPS and forwards /api, /docs and
+# /openapi.json to the API container. Built by build/docker/make-bundle.sh from the project root
+# (frontend/dist must be built first):
+#   docker build -f build/docker/Dockerfile.web -t docupulse-idp-web .
+FROM nginx:1.28-alpine
+
+# openssl makes a self-signed certificate on the first start when none is supplied
+RUN apk add --no-cache openssl && rm -f /etc/nginx/conf.d/default.conf
+
+ENV API_UPSTREAM=api:8000 HTTPS_PORT=443 MAX_BODY_MB=30 HSTS_HEADER="" TLS_SUBJECT_ALT_NAMES="" TUNNEL_IP=127.0.0.2
+COPY build/docker/nginx/default.conf.template /etc/nginx/templates/default.conf.template
+COPY build/docker/nginx/ui-headers.conf /etc/nginx/snippets/ui-headers.conf
+COPY build/docker/nginx/10-self-signed-cert.sh /docker-entrypoint.d/10-self-signed-cert.sh
+RUN chmod 755 /docker-entrypoint.d/10-self-signed-cert.sh
+COPY frontend/dist/ /usr/share/nginx/html/
+
+EXPOSE 80 443
+VOLUME ["/etc/nginx/certs"]
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 CMD wget -q --no-check-certificate -O /dev/null https://127.0.0.1/index.html || exit 1

@@ -1,0 +1,15 @@
+# Only the backend source goes into the API image: no environments, documents, databases, keys or live config
+**
+!backend/**
+!build/docker/api-entrypoint.sh
+backend/storage
+backend/config/server.ini
+backend/config/database.ini
+backend/config/auth.ini
+**/__pycache__
+**/*.pyc
+**/.DS_Store
+**/*.db
+**/*.log
+**/secret.key
+**/initial_admin_password.txt

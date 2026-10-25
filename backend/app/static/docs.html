@@ -1,0 +1,1100 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DocuPulse IDP — Technical Documentation</title>
+<style>
+:root {
+  --bg: #0b1020; --panel: #111830; --panel2: #0e1528; --line: #26314f; --text: #e6eaf5; --muted: #93a0bd; --dim: #6b7898;
+  --accent: #818cf8; --cyan: #22d3ee; --green: #34d399; --amber: #fbbf24; --rose: #fb7185; --violet: #c084fc;
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 15px/1.6 var(--font); }
+a { color: var(--accent); }
+.layout { display: grid; grid-template-columns: 270px minmax(0, 1fr); min-height: 100vh; }
+nav.toc { position: sticky; top: 0; height: 100vh; overflow-y: auto; padding: 22px 16px; background: #0a0f1d; border-right: 1px solid var(--line); }
+nav.toc .brand { font-weight: 700; font-size: 1.05rem; margin-bottom: 2px; }
+nav.toc .sub { color: var(--dim); font-size: .78rem; margin-bottom: 18px; }
+nav.toc a { display: block; color: var(--muted); text-decoration: none; padding: 5px 10px; border-radius: 6px; font-size: .86rem; }
+nav.toc a:hover, nav.toc a.active { background: #151e38; color: var(--text); }
+nav.toc .grp { color: var(--dim); font-size: .7rem; text-transform: uppercase; letter-spacing: .08em; margin: 16px 10px 4px; }
+main { padding: 32px clamp(16px, 4vw, 56px) 80px; max-width: 1180px; }
+h1 { font-size: 1.9rem; margin: 0 0 6px; }
+h2 { font-size: 1.4rem; margin: 54px 0 12px; padding-top: 8px; border-top: 1px solid var(--line); }
+h3 { font-size: 1.08rem; margin: 26px 0 8px; color: #cdd5f0; }
+p, li { color: #cfd6ea; }
+.lead { color: var(--muted); font-size: 1.02rem; max-width: 820px; }
+code, pre { font-family: var(--mono); font-size: .82rem; }
+code { background: #151d36; padding: 1px 6px; border-radius: 4px; color: #c7d2fe; }
+pre { background: #080c18; border: 1px solid var(--line); padding: 14px 16px; border-radius: 8px; overflow-x: auto; color: #d6def5; line-height: 1.5; }
+table { width: 100%; border-collapse: collapse; margin: 10px 0 18px; font-size: .86rem; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 600; background: #0f1630; }
+td code { white-space: nowrap; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; margin: 14px 0; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+.card b { display: block; margin-bottom: 4px; }
+.card span { color: var(--muted); font-size: .86rem; }
+.note { border-left: 3px solid var(--amber); background: #1b1a12; padding: 10px 14px; border-radius: 6px; color: #f3e6bf; margin: 14px 0; }
+.ok { border-left-color: var(--green); background: #0f1d18; color: #c9f2e0; }
+.warn { border-left-color: var(--rose); background: #1f1218; color: #ffd6de; }
+figure { margin: 18px 0 24px; background: var(--panel2); border: 1px solid var(--line); border-radius: 12px; padding: 16px; overflow-x: auto; }
+figcaption { color: var(--dim); font-size: .8rem; margin-top: 8px; }
+svg { display: block; max-width: 100%; height: auto; margin: 0 auto; font-family: var(--font); }
+svg .box { fill: #141d38; stroke: #3b4a78; stroke-width: 1.4; }
+svg .box.a { fill: #1a1f45; stroke: var(--accent); }
+svg .box.c { fill: #0f2730; stroke: var(--cyan); }
+svg .box.g { fill: #0f261f; stroke: var(--green); }
+svg .box.y { fill: #2a2412; stroke: var(--amber); }
+svg .box.r { fill: #2a1520; stroke: var(--rose); }
+svg .box.v { fill: #22163a; stroke: var(--violet); }
+svg .zone { fill: none; stroke: #33406a; stroke-dasharray: 6 5; stroke-width: 1.2; }
+svg text { fill: #e6eaf5; font-size: 13px; }
+svg .t2 { fill: #93a0bd; font-size: 11px; }
+svg .th { font-weight: 700; font-size: 13.5px; }
+svg .zl { fill: #6b7898; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; }
+svg .ln { stroke: #5b6a99; stroke-width: 1.6; fill: none; marker-end: url(#arr); }
+svg .ln.d { stroke-dasharray: 5 4; }
+svg .er-h { fill: #1f2a52; }
+svg .er-pk { fill: var(--amber); font-size: 11px; }
+svg .er-fk { fill: var(--cyan); font-size: 11px; }
+svg .er-c { fill: #cfd6ea; font-size: 11.5px; font-family: var(--mono); }
+.pill { display: inline-block; font-size: .72rem; padding: 1px 8px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); margin-right: 4px; }
+.ep { border: 1px solid var(--line); border-radius: 8px; margin: 6px 0; background: var(--panel); }
+.ep summary { cursor: pointer; padding: 8px 12px; display: flex; gap: 10px; align-items: center; list-style: none; }
+.ep summary::-webkit-details-marker { display: none; }
+.m { font: 600 .7rem var(--mono); padding: 3px 8px; border-radius: 4px; min-width: 56px; text-align: center; color: #fff; }
+.get { background: #1d4ed8; } .post { background: #047857; } .patch { background: #b45309; } .put { background: #7c3aed; } .delete { background: #b91c1c; }
+.ep .d { padding: 0 14px 10px; color: var(--muted); font-size: .85rem; white-space: pre-wrap; }
+.ep .tag { margin-left: auto; color: var(--dim); font-size: .75rem; }
+@media (max-width: 900px) { .layout { grid-template-columns: 1fr; } nav.toc { position: static; height: auto; } }
+@media print { nav.toc { display: none; } .layout { display: block; } body { background: #fff; color: #000; } }
+</style>
+</head>
+<body>
+<div class="layout">
+<nav class="toc" id="toc">
+  <div class="brand">DocuPulse IDP</div>
+  <div class="sub">Technical documentation · v<span id="ver">1.1</span></div>
+  <div class="grp">Overview</div>
+  <a href="#intro">1. Introduction</a>
+  <a href="#architecture">2. Architecture</a>
+  <a href="#stack">3. Technology stack</a>
+  <div class="grp">Design</div>
+  <a href="#lld">4. Low-level design</a>
+  <a href="#pipeline">5. Extraction pipeline</a>
+  <a href="#templates">6. Templates &amp; review</a>
+  <a href="#security">7. Security, sign-in &amp; roles</a>
+  <a href="#db">8. Database design</a>
+  <a href="#api">9. API reference</a>
+  <div class="grp">Operate</div>
+  <a href="#infra">10. Infrastructure</a>
+  <a href="#deploy">11. Deployment</a>
+  <a href="#addresses">&nbsp;&nbsp;11.9 Hostnames, ports, load balancers</a>
+  <a href="#docker">&nbsp;&nbsp;11.10 Docker / NAS</a>
+  <a href="#config">12. Configuration reference</a>
+  <a href="#ops">13. Operations &amp; monitoring</a>
+  <a href="#backup">14. Backup &amp; restore</a>
+  <a href="#upgrade">15. Upgrades</a>
+  <a href="#trouble">16. Troubleshooting</a>
+  <a href="#limits">17. Known limitations</a>
+  <a href="#glossary">18. Glossary</a>
+</nav>
+
+<main>
+<h1>DocuPulse IDP — Technical Documentation</h1>
+<p class="lead">Architecture, design, database, deployment and operations guide for DocuPulse IDP, an intelligent document processing application that runs entirely on your own network: no cloud services and no internet access are needed at run time.</p>
+
+<!-- ============================================================ -->
+<h2 id="intro">1. Introduction</h2>
+<p>DocuPulse IDP turns documents (PDFs, scans, photos, text files) into structured data. Users upload a document; the system reads its text (from the PDF text layer or by offline OCR), recognises what kind of document it is, extracts fields and tables, checks them, and routes anything uncertain to a person for review. Reviewers can correct values, add fields by drawing on the page, and save the result as a reusable <b>template</b> so similar documents are extracted the same way next time.</p>
+<div class="cards">
+  <div class="card"><b>Fully offline</b><span>Text extraction, OCR, rules and templates run locally. No LLM is required; an optional local LLM on your own network can be enabled.</span></div>
+  <div class="card"><b>Any document</b><span>Built-in rules for contracts, passports/IDs and invoices; templates for your own forms; a general extractor for everything else.</span></div>
+  <div class="card"><b>Human in the loop</b><span>Low-confidence or invalid values go to review with the source highlighted on the page; every change is audited.</span></div>
+  <div class="card"><b>Enterprise sign-in</b><span>Local accounts, Okta (OIDC) or Active Directory/LDAP, with AD-group based roles and per-user document isolation.</span></div>
+</div>
+<h3>Key capabilities</h3>
+<ul>
+  <li>Upload PDF (text or scanned, multi-page), PNG/JPG/TIFF/BMP/WEBP images, TXT/MD/CSV/JSON. Maximum size configurable (default 25 MB).</li>
+  <li>Auto-detection of document type and matching template; ICAO 9303 passport MRZ validation (all five check digits); invoice reconciliation (subtotal + tax = total, line items = subtotal).</li>
+  <li>Layout-aware extraction of label/value pairs (with or without colons), multi-column forms, and tables including wrapped cells and tables spanning pages.</li>
+  <li>Document Hub with Finder-style folders (nested, drag-and-drop, up to three favourite folders as tabs) and multi-select move/delete.</li>
+  <li>Review Studio: page viewer with value boxes, inline editing, draw-to-add fields (also by touch), field renaming, approve/reject, audit trail.</li>
+  <li>Web UI in Angular: responsive on phone, tablet and desktop, installable as an app (PWA), six colour themes with light, dark or automatic mode.</li>
+  <li>Security: sign-in lock-out, temporary first-run admin password, strict security headers, encrypted stored secrets, JSON application and audit logs with request ids (section 7).</li>
+  <li>Exports: JSON, CSV and Excel (.xlsx, one sheet for fields and one per table). Webhooks with HMAC-SHA256 signatures. REST API with API keys.</li>
+  <li>Database: SQLite (default), PostgreSQL or Microsoft SQL Server, selected by configuration.</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2 id="architecture">2. Architecture</h2>
+<p>DocuPulse has <b>three layers that can be deployed together or separately</b>:</p>
+<ul>
+  <li><b>Web UI</b> — a static Angular build (<code>frontend/dist</code>): a responsive, installable web app (PWA) that works on phones, tablets and desktops. It talks to the system only through the REST API, at the address set in <code>config.js</code>. It can be hosted by the API server itself or by any web server (IIS, nginx, Apache).</li>
+  <li><b>API server</b> — one Python process (FastAPI on Uvicorn) with the REST API, sign-in and the document-processing engine. Settings in <code>backend/config/server.ini</code>.</li>
+  <li><b>Database</b> — SQLite on the API server, or SQL Server / PostgreSQL on their own server. Settings in <code>backend/config/database.ini</code>.</li>
+</ul>
+<h3>2.1 Web UI on phones, tablets and desktops</h3>
+<ul>
+  <li><b>Responsive</b>: below 900&nbsp;px wide the sidebar becomes a slide-out menu (☰ in the header); below 640&nbsp;px document lists turn into cards, forms use one column, dialogs open as bottom sheets and the Review Studio stacks the page above the fields. Drawing a box to add a field works with touch.</li>
+  <li><b>Installable (PWA)</b>: browsers offer <i>Install app</i> / <i>Add to Home Screen</i>. The installed app opens in its own window and its screens load from the device even when the server is unreachable; documents and every other API response always come live from the server and are never cached on the device.</li>
+  <li><b>Install needs HTTPS</b>: browsers only allow installing (service workers) on <code>https://</code> addresses or on <code>localhost</code>. On a plain <code>http://server:8000</code> intranet address the app works normally in the browser but is not installable; put it behind the TLS reverse proxy in 11.6 to enable install.</li>
+  <li><b>Themes and light/dark mode</b>: the user menu (top right) has <i>Appearance</i>: <b>Light</b>, <b>Dark</b> or <b>Auto</b> (follows the device's setting and switches with it), and six colour themes — Ocean (white and blue, with a blue sidebar in light mode), Indigo (the default), Emerald, Violet, Sunset and Graphite — each in a light and a dark version. The choice is saved in the browser on that device (<code>localStorage</code> key <code>idp-appearance</code>), so each person and device can have their own; nothing is stored on the server. Colours are CSS custom properties in <code>frontend/src/styles.css</code> (section "Themes"); a new theme is one block there plus an entry in <code>core/theme.ts</code>.</li>
+  <li><b>Updates</b>: after a new build is deployed, an open or installed app picks it up on its next load (<code>index.html</code>, <code>ngsw.json</code>, <code>ngsw-worker.js</code> and <code>config.js</code> are served uncached).</li>
+</ul>
+<p>Files (uploads, page images) live on the API server's storage folder, which can be a network share. External systems are optional and only used if configured.</p>
+<figure>
+<svg viewBox="0 0 1060 300" role="img" aria-label="Deployment modes">
+  <defs><marker id="arr6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b6a99"/></marker></defs>
+  <style>.ln6{stroke:#5b6a99;stroke-width:1.6;fill:none;marker-end:url(#arr6)}</style>
+  <text x="20" y="28" class="zl">A · Single server (default, e.g. a Mac or one VM)</text>
+  <rect class="zone" x="20" y="40" width="420" height="230" rx="14"/>
+  <rect class="box c" x="45" y="65" width="370" height="100" rx="10"/><text x="230" y="92" text-anchor="middle" class="th">API server :8000</text><text x="230" y="114" text-anchor="middle" class="t2">serves the UI (serve_frontend = true) + /api + /docs</text><text x="230" y="132" text-anchor="middle" class="t2">config.js apiBaseUrl = "" (same server)</text>
+  <rect class="box y" x="45" y="190" width="370" height="56" rx="10"/><text x="230" y="215" text-anchor="middle" class="th">SQLite + storage/</text><text x="230" y="233" text-anchor="middle" class="t2">on the same machine</text>
+  <path class="ln6" d="M230,165 L230,188"/>
+  <text x="490" y="28" class="zl">B · Layered (each tier on its own server)</text>
+  <rect class="zone" x="490" y="40" width="550" height="230" rx="14"/>
+  <rect class="box a" x="510" y="70" width="150" height="90" rx="10"/><text x="585" y="98" text-anchor="middle" class="th">Web server</text><text x="585" y="118" text-anchor="middle" class="t2">frontend/dist</text><text x="585" y="134" text-anchor="middle" class="t2">config.js → API URL</text>
+  <rect class="box c" x="700" y="70" width="160" height="90" rx="10"/><text x="780" y="98" text-anchor="middle" class="th">API server</text><text x="780" y="118" text-anchor="middle" class="t2">serve_frontend = false</text><text x="780" y="134" text-anchor="middle" class="t2">[cors] = UI address</text>
+  <rect class="box y" x="895" y="70" width="130" height="90" rx="10"/><text x="960" y="98" text-anchor="middle" class="th">DB server</text><text x="960" y="118" text-anchor="middle" class="t2">SQL Server /</text><text x="960" y="134" text-anchor="middle" class="t2">PostgreSQL</text>
+  <rect class="box" x="700" y="190" width="160" height="56" rx="10"/><text x="780" y="215" text-anchor="middle" class="th">File storage</text><text x="780" y="233" text-anchor="middle" class="t2">local disk or share</text>
+  <rect class="box" x="510" y="190" width="150" height="56" rx="10"/><text x="585" y="215" text-anchor="middle" class="th">Browser</text><text x="585" y="233" text-anchor="middle" class="t2">loads UI, calls API</text>
+  <path class="ln6" d="M585,188 L585,162"/><path class="ln6" d="M660,215 C680,215 680,140 698,140"/><path class="ln6" d="M860,115 L893,115"/><path class="ln6" d="M780,160 L780,188"/>
+</svg>
+<figcaption>Figure 1a — The same build runs in either mode; only the three settings files differ.</figcaption>
+</figure>
+<figure>
+<svg viewBox="0 0 1060 560" role="img" aria-label="System architecture">
+  <defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b6a99"/></marker></defs>
+  <!-- users -->
+  <rect class="box a" x="20" y="60" width="170" height="70" rx="10"/><text x="105" y="90" text-anchor="middle" class="th">Reviewers &amp; admins</text><text x="105" y="110" text-anchor="middle" class="t2">Browser or installed app</text>
+  <rect class="box a" x="20" y="170" width="170" height="70" rx="10"/><text x="105" y="200" text-anchor="middle" class="th">Other systems</text><text x="105" y="220" text-anchor="middle" class="t2">REST API + API key</text>
+  <!-- proxy -->
+  <rect class="box" x="235" y="110" width="150" height="80" rx="10"/><text x="310" y="140" text-anchor="middle" class="th">Reverse proxy</text><text x="310" y="160" text-anchor="middle" class="t2">TLS :443 (optional)</text><text x="310" y="176" text-anchor="middle" class="t2">nginx / IIS / F5</text>
+  <!-- app zone -->
+  <rect class="zone" x="420" y="20" width="400" height="430" rx="14"/><text x="436" y="40" class="zl">DocuPulse application server · :8000</text>
+  <rect class="box c" x="440" y="55" width="360" height="62" rx="10"/><text x="620" y="80" text-anchor="middle" class="th">Web UI (static Angular PWA build)</text><text x="620" y="100" text-anchor="middle" class="t2">frontend/dist served by the same process</text>
+  <rect class="box c" x="440" y="130" width="360" height="80" rx="10"/><text x="620" y="155" text-anchor="middle" class="th">FastAPI REST API</text><text x="620" y="175" text-anchor="middle" class="t2">/api/auth · /api/v1/documents · schemas · keys</text><text x="620" y="191" text-anchor="middle" class="t2">webhooks · analytics · admin · /docs</text>
+  <rect class="box v" x="440" y="222" width="170" height="64" rx="10"/><text x="525" y="248" text-anchor="middle" class="th">Auth &amp; RBAC</text><text x="525" y="268" text-anchor="middle" class="t2">sessions · roles · owner checks</text>
+  <rect class="box g" x="630" y="222" width="170" height="64" rx="10"/><text x="715" y="248" text-anchor="middle" class="th">Document service</text><text x="715" y="268" text-anchor="middle" class="t2">routing · review rules · audit</text>
+  <rect class="box g" x="440" y="300" width="360" height="66" rx="10"/><text x="620" y="325" text-anchor="middle" class="th">Extraction engine</text><text x="620" y="345" text-anchor="middle" class="t2">pdfplumber · pypdfium2 · RapidOCR · rules · templates</text>
+  <rect class="box" x="440" y="378" width="170" height="56" rx="10"/><text x="525" y="402" text-anchor="middle" class="th">Exports</text><text x="525" y="420" text-anchor="middle" class="t2">JSON · CSV · XLSX</text>
+  <rect class="box" x="630" y="378" width="170" height="56" rx="10"/><text x="715" y="402" text-anchor="middle" class="th">Webhook dispatcher</text><text x="715" y="420" text-anchor="middle" class="t2">async · HMAC-SHA256</text>
+  <!-- data -->
+  <rect class="box y" x="860" y="80" width="180" height="80" rx="10"/><text x="950" y="108" text-anchor="middle" class="th">Database</text><text x="950" y="128" text-anchor="middle" class="t2">SQLite · PostgreSQL</text><text x="950" y="144" text-anchor="middle" class="t2">SQL Server</text>
+  <rect class="box y" x="860" y="190" width="180" height="80" rx="10"/><text x="950" y="218" text-anchor="middle" class="th">File storage</text><text x="950" y="238" text-anchor="middle" class="t2">uploads · page images</text><text x="950" y="254" text-anchor="middle" class="t2">word boxes · logs</text>
+  <!-- external -->
+  <rect class="zone" x="20" y="300" width="370" height="240" rx="14"/><text x="36" y="320" class="zl">Optional, only if configured</text>
+  <rect class="box r" x="40" y="335" width="160" height="56" rx="10"/><text x="120" y="358" text-anchor="middle" class="th">Active Directory</text><text x="120" y="376" text-anchor="middle" class="t2">LDAP/LDAPS :389/:636</text>
+  <rect class="box r" x="215" y="335" width="160" height="56" rx="10"/><text x="295" y="358" text-anchor="middle" class="th">Okta</text><text x="295" y="376" text-anchor="middle" class="t2">OIDC over HTTPS (cloud)</text>
+  <rect class="box r" x="40" y="405" width="160" height="56" rx="10"/><text x="120" y="428" text-anchor="middle" class="th">Local LLM</text><text x="120" y="446" text-anchor="middle" class="t2">Ollama / llama.cpp</text>
+  <rect class="box r" x="215" y="405" width="160" height="56" rx="10"/><text x="295" y="428" text-anchor="middle" class="th">Webhook receivers</text><text x="295" y="446" text-anchor="middle" class="t2">your systems</text>
+  <text x="205" y="505" text-anchor="middle" class="t2">Okta is the only option that needs the internet.</text>
+  <!-- arrows -->
+  <path class="ln" d="M190,95 C215,95 215,135 233,140"/>
+  <path class="ln" d="M190,205 C215,205 215,165 233,160"/>
+  <path class="ln" d="M385,150 L438,150"/>
+  <path class="ln" d="M800,170 C830,170 830,120 858,120"/>
+  <path class="ln" d="M800,330 C835,330 835,230 858,230"/>
+  <path class="ln d" d="M440,254 C300,254 160,290 120,333"/>
+  <path class="ln d" d="M450,270 C380,300 310,300 295,333"/>
+  <path class="ln d" d="M440,345 C300,360 200,380 160,403"/>
+  <path class="ln d" d="M640,420 C560,470 420,470 377,440"/>
+</svg>
+<figcaption>Figure 1 — System context and containers. Solid arrows: always used. Dashed: optional integrations.</figcaption>
+</figure>
+
+<h3>Design principles</h3>
+<ul>
+  <li><b>Offline by default.</b> No CDN, no web fonts from the internet, no cloud APIs. Fonts, OCR models and the API docs are bundled.</li>
+  <li><b>Never invent data.</b> A value that is not found is left empty and flagged; it is never filled with a guess.</li>
+  <li><b>Deterministic first.</b> Rules, layout analysis and templates do the work; an LLM is optional and can only return values that literally appear in the document.</li>
+  <li><b>Isolation enforced on the server.</b> Every document request checks ownership; the UI hiding something is never the only control.</li>
+  <li><b>Layered and configurable.</b> The UI only talks to the API; the API only talks to the database through its connection settings. Any tier can move to another server by editing a settings file, with no code change or rebuild.</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2 id="stack">3. Technology stack</h2>
+<table>
+<tr><th>Layer</th><th>Technology</th><th>Version</th><th>Purpose</th></tr>
+<tr><td>Language / runtime</td><td>Python</td><td>3.12 (3.11 minimum)</td><td>Backend, extraction engine</td></tr>
+<tr><td>Web framework</td><td>FastAPI on Uvicorn (ASGI)</td><td>0.128 / 0.39</td><td>REST API, static UI, docs</td></tr>
+<tr><td>Validation</td><td>Pydantic</td><td>2.x</td><td>Request/response models</td></tr>
+<tr><td>PDF text &amp; layout</td><td>pdfplumber (pdfminer.six)</td><td>0.11</td><td>Text layer and word coordinates</td></tr>
+<tr><td>PDF rendering</td><td>pypdfium2</td><td>5.x</td><td>Page images for the viewer and OCR</td></tr>
+<tr><td>OCR</td><td>RapidOCR (ONNX Runtime, models bundled)</td><td>1.4 / 1.19</td><td>Scanned PDFs and images, offline</td></tr>
+<tr><td>Images</td><td>Pillow, NumPy, OpenCV (headless, via RapidOCR)</td><td></td><td>Image handling</td></tr>
+<tr><td>HTTP client</td><td>httpx</td><td>0.28</td><td>Webhooks, Okta, optional local LLM</td></tr>
+<tr><td>Directory</td><td>ldap3 (pure Python)</td><td>2.9</td><td>AD / LDAP sign-in</td></tr>
+<tr><td>Cryptography</td><td>cryptography (Fernet)</td><td>50</td><td>Encrypts stored sign-in secrets</td></tr>
+<tr><td>Logging</td><td>Python logging, rotating JSON files</td><td></td><td>app.log, audit.log</td></tr>
+<tr><td>Database drivers</td><td>sqlite3 (built in) · psycopg 3 · pymssql</td><td></td><td>SQLite · PostgreSQL · SQL Server</td></tr>
+<tr><td>Excel export</td><td>Built-in writer (Python standard library)</td><td></td><td>.xlsx without extra packages</td></tr>
+<tr><td>Sample documents</td><td>ReportLab</td><td>5.x</td><td>Generates the demo PDFs (contract, US passport, invoice) when the demo feature flag is on</td></tr>
+<tr><td>Frontend</td><td>Angular (standalone components, signals) + Angular CLI build</td><td>22</td><td>Responsive single-page web application</td></tr>
+<tr><td>PWA</td><td>@angular/service-worker, web app manifest</td><td>22</td><td>Install on desktop/phone, offline app shell</td></tr>
+<tr><td>UI assets</td><td>Lucide icons, @fontsource fonts</td><td></td><td>Bundled locally</td></tr>
+</table>
+
+<h3>3.1 Licences</h3>
+<p>DocuPulse IDP itself is released under the <b>MIT License</b> (<code>LICENSE</code> at the project root). Every component it uses is open source. The full list with versions is in <code>THIRD_PARTY_LICENSES.md</code> at the project root, generated from the installed packages by <code>build/tools/third_party_licenses.py</code> (re-run it after changing dependencies).</p>
+<table>
+<tr><th>Licence</th><th>Components</th></tr>
+<tr><td>MIT / ISC</td><td>FastAPI, Pydantic, pdfplumber, pdfminer.six, ONNX Runtime, Angular, RxJS (Apache-2.0), Lucide (ISC) and most small libraries</td></tr>
+<tr><td>BSD / 0BSD</td><td>tslib (0BSD), Uvicorn, Starlette, httpx, NumPy, pypdfium2 / PDFium, ReportLab, Shapely, protobuf</td></tr>
+<tr><td>Apache-2.0</td><td>cryptography (Apache-2.0 or BSD), RapidOCR and its PaddleOCR models, OpenCV, python-multipart, aiofiles</td></tr>
+<tr><td>MIT-CMU (HPND)</td><td>Pillow</td></tr>
+<tr><td>MPL-2.0</td><td>certifi, tqdm (dual MIT)</td></tr>
+<tr><td>LGPL</td><td>ldap3 (v3); optional database drivers pymssql (2.1) and psycopg (3), used unmodified as separate libraries</td></tr>
+<tr><td>SIL OFL-1.1</td><td>Fonts: Plus Jakarta Sans, JetBrains Mono</td></tr>
+</table>
+<p>Not part of the software: the database server (SQLite is public domain, PostgreSQL uses the PostgreSQL Licence, Microsoft SQL Server is licensed by Microsoft) and identity services such as Okta or Active Directory.</p>
+
+<!-- ============================================================ -->
+<h2 id="lld">4. Low-level design</h2>
+<h3>4.1 Code layout</h3>
+<pre>build/
+  mac-linux/  install.sh · start.sh · stop.sh · status.sh · make-package.sh
+  windows/    install · start · stop · status  (.bat wrappers around .ps1)
+  tools/third_party_licenses.py   regenerates THIRD_PARTY_LICENSES.md
+  wheels/                         Python packages for offline install (inside a package made by make-package.sh)
+LICENSE                           MIT License for DocuPulse IDP
+THIRD_PARTY_LICENSES.md           every dependency and its open-source licence
+backend/
+  run.py                         start-up (host, port, reload from config/server.ini)
+  reset_admin.py                 emergency reset of the local admin password
+  config/server.ini              API server settings (created from server.example.ini)
+  config/database.ini            database selection (created from database.example.ini)
+  db/schema/{sqlite,postgresql,sqlserver}.sql    table definitions, run once on first boot
+  app/
+    main.py                      FastAPI app, routers, /docs, start-up, serves frontend/dist
+    core/
+      config.py                  settings from environment variables
+      database.py                connection layer for 3 databases, first-boot schema setup
+      auth.py                    users, sessions, password hashing, auth settings, group→role
+      ldap_auth.py               Active Directory / LDAP sign-in
+      security.py                request authentication (session cookie or API key), scopes
+    api/
+      auth_routes.py             /api/auth: login, logout, me, Okta OIDC
+      v1/documents.py            upload, list, review, fields, exports, delete (owner-checked)
+      v1/schemas.py              templates, save-as-template
+      v1/admin.py                sign-in settings, users, Okta/LDAP tests
+      v1/apikeys.py, webhooks.py, analytics.py
+    services/
+      document_service.py        processing orchestration, review logic, audit, fields
+      webhook_service.py         signed webhook delivery and logging
+      xlsx_writer.py             Excel writer
+    engine/
+      ocr_extractor.py           text layer, OCR, page rendering, word boxes
+      local_llm.py               optional OpenAI-compatible local LLM (grounded)
+      pipelines/  common.py · contracts.py · identity.py · invoices.py
+                  custom_schema.py (templates) · generic.py (any document, tables)
+frontend/public/config.js        UI settings: API address (copied to dist/, editable after build)
+frontend/public/manifest.webmanifest           installed-app name, colours and icon list
+frontend/public/branding/        logo, favicons and app icons (replaceable; see 12, "Branding")
+frontend/ngsw-config.json        service worker: caches the app shell only, never /api
+frontend/proxy.conf.js           dev server (ng serve) forwards /api and /docs to IDP_API_URL (default :8000)
+frontend/src/app/
+  app.ts, app.routes.ts          sign-in gate; routes (admin pages guarded by role)
+  core/api.ts                    REST client: every call goes to config.js apiBaseUrl, with credentials
+  core/store.ts                  signed-in user, documents, templates, keys, webhooks (signals)
+  core/dismiss.directive.ts      shared "close on outside click / Escape" for menus and dialogs
+  core/icon.ts                   bundled Lucide icons
+  core/theme.ts                  themes and light / dark / auto mode (saved per browser)
+  shell/                         login page; sidebar (slide-out on phones), header, user menu
+  pages/                         dashboard, document-list, review, upload-modal, schema-builder,
+                                 admin-settings, api-keys, webhooks, api-console</pre>
+
+<h3>4.2 Request handling</h3>
+<p>Every <code>/api/v1</code> endpoint depends on <code>check_scope(...)</code>, which calls <code>verify_api_key</code>: a request is identified either by the <code>idp_session</code> cookie (browser) or by an <code>X-API-Key</code> / <code>Bearer</code> header. Anonymous requests receive <code>401</code>. The caller's role defines its scopes; an API key can only narrow its owner's scopes.</p>
+<table>
+<tr><th>Role</th><th>Scopes</th><th>Can do</th></tr>
+<tr><td><b>user</b></td><td><code>doc:read</code> <code>doc:write</code></td><td>Upload, review, edit, export and delete <i>own</i> documents; save a template from own document; pick templates.</td></tr>
+<tr><td><b>admin</b></td><td>+ <code>schema:manage</code> <code>admin</code></td><td>All of the above for own documents, plus templates, users, sign-in settings, API keys, webhooks, API reference.</td></tr>
+</table>
+<p>Per-document endpoints call <code>_owned(doc_id, auth)</code> first: if the document's <code>owner_id</code> is not the caller, the response is <code>404 Document not found</code> — identical to a missing document, so other users' document IDs cannot be probed. This applies to read, page images, exports, edits, re-run, approve/reject and delete. Lists and dashboard figures are filtered by owner in SQL.</p>
+
+<h3>4.3 Processing model</h3>
+<p>Uploads are processed synchronously by default (<code>sync=true</code>, the response contains the finished document) or in the background (<code>sync=false</code>, status <code>queued</code> → <code>processing</code> → result; clients poll or listen to webhooks). CPU-heavy steps (rendering, OCR) run in a worker thread so the API stays responsive. Webhooks are dispatched as background tasks so a slow receiver never delays processing.</p>
+<table>
+<tr><th>Status</th><th>Meaning</th></tr>
+<tr><td><code>queued</code> / <code>processing</code></td><td>Accepted / being extracted</td></tr>
+<tr><td><code>needs_review</code></td><td>A field failed validation, overall confidence is below the threshold (default 85%), no text or no fields were found, or no template matched</td></tr>
+<tr><td><code>approved</code></td><td>Passed all checks automatically (straight-through) or approved by a reviewer</td></tr>
+<tr><td><code>rejected</code></td><td>Rejected by a reviewer, with a reason</td></tr>
+<tr><td><code>failed</code></td><td>Processing raised an error; details in metadata and the audit trail</td></tr>
+</table>
+
+<h3>4.4 File storage layout</h3>
+<pre>backend/storage/                     (IDP_STORAGE_DIR)
+  idp_saas.db                        SQLite database (when engine = sqlite)
+  uploads/&lt;doc_id&gt;_&lt;file name&gt;       original uploaded files
+  &lt;doc_id&gt;/page_1.png …              rendered page images (2x) for the viewer
+  &lt;doc_id&gt;/words.json                word boxes (percent coordinates) for draw-to-add fields
+  initial_admin_password.txt         first-run temporary admin password (owner-only; deleted when it is changed)
+  logs/server.log                    server log (when started as described below)</pre>
+
+<!-- ============================================================ -->
+<h2 id="pipeline">5. Extraction pipeline</h2>
+<figure>
+<svg viewBox="0 0 1060 430" role="img" aria-label="Extraction pipeline">
+  <defs><marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b6a99"/></marker></defs>
+  <style>.ln2{stroke:#5b6a99;stroke-width:1.6;fill:none;marker-end:url(#arr2)}</style>
+  <rect class="box a" x="15" y="40" width="140" height="70" rx="10"/><text x="85" y="70" text-anchor="middle" class="th">Upload</text><text x="85" y="90" text-anchor="middle" class="t2">type · size · owner</text>
+  <rect class="box c" x="185" y="40" width="160" height="70" rx="10"/><text x="265" y="68" text-anchor="middle" class="th">Read text</text><text x="265" y="86" text-anchor="middle" class="t2">PDF text layer, or</text><text x="265" y="100" text-anchor="middle" class="t2">offline OCR per page</text>
+  <rect class="box c" x="375" y="40" width="160" height="70" rx="10"/><text x="455" y="68" text-anchor="middle" class="th">Layout</text><text x="455" y="86" text-anchor="middle" class="t2">lines · column segments</text><text x="455" y="100" text-anchor="middle" class="t2">word boxes saved</text>
+  <rect class="box v" x="565" y="40" width="160" height="70" rx="10"/><text x="645" y="68" text-anchor="middle" class="th">Classify</text><text x="645" y="86" text-anchor="middle" class="t2">keywords · template</text><text x="645" y="100" text-anchor="middle" class="t2">labels · letterhead</text>
+  <path class="ln2" d="M155,75 L183,75"/><path class="ln2" d="M345,75 L373,75"/><path class="ln2" d="M535,75 L563,75"/>
+  <!-- branches -->
+  <rect class="box g" x="760" y="10" width="285" height="50" rx="10"/><text x="902" y="32" text-anchor="middle" class="th">Built-in rules</text><text x="902" y="49" text-anchor="middle" class="t2">contracts · passport/ID (MRZ) · invoices</text>
+  <rect class="box g" x="760" y="70" width="285" height="50" rx="10"/><text x="902" y="92" text-anchor="middle" class="th">Template</text><text x="902" y="109" text-anchor="middle" class="t2">regex → label/aliases → page region</text>
+  <rect class="box g" x="760" y="130" width="285" height="50" rx="10"/><text x="902" y="152" text-anchor="middle" class="th">General extractor</text><text x="902" y="169" text-anchor="middle" class="t2">label:value · form layout · people</text>
+  <path class="ln2" d="M725,70 C742,70 742,35 758,35"/><path class="ln2" d="M725,75 L758,95"/><path class="ln2" d="M725,80 C742,80 742,155 758,155"/>
+  <!-- second row -->
+  <rect class="box y" x="760" y="220" width="285" height="56" rx="10"/><text x="902" y="244" text-anchor="middle" class="th">Tables (every document)</text><text x="902" y="262" text-anchor="middle" class="t2">header → aligned rows · wrapped cells · pages</text>
+  <rect class="box r" x="560" y="220" width="170" height="56" rx="10"/><text x="645" y="244" text-anchor="middle" class="th">Local LLM (optional)</text><text x="645" y="262" text-anchor="middle" class="t2">missing template fields</text>
+  <rect class="box v" x="350" y="220" width="180" height="56" rx="10"/><text x="440" y="244" text-anchor="middle" class="th">Validate &amp; score</text><text x="440" y="262" text-anchor="middle" class="t2">types · required · thresholds</text>
+  <rect class="box a" x="160" y="220" width="160" height="56" rx="10"/><text x="240" y="244" text-anchor="middle" class="th">Decide</text><text x="240" y="262" text-anchor="middle" class="t2">approved / needs review</text>
+  <rect class="box" x="15" y="220" width="115" height="56" rx="10"/><text x="72" y="244" text-anchor="middle" class="th">Store</text><text x="72" y="262" text-anchor="middle" class="t2">DB + audit</text>
+  <path class="ln2" d="M902,180 L902,218"/><path class="ln2" d="M758,248 L732,248"/><path class="ln2" d="M558,248 L532,248"/><path class="ln2" d="M348,248 L322,248"/><path class="ln2" d="M158,248 L132,248"/>
+  <rect class="box" x="15" y="320" width="300" height="80" rx="10"/><text x="165" y="346" text-anchor="middle" class="th">Review Studio</text><text x="165" y="366" text-anchor="middle" class="t2">fix values · draw to add fields · rename</text><text x="165" y="382" text-anchor="middle" class="t2">approve / reject · save as template</text>
+  <rect class="box" x="350" y="320" width="230" height="80" rx="10"/><text x="465" y="346" text-anchor="middle" class="th">Exports &amp; webhooks</text><text x="465" y="366" text-anchor="middle" class="t2">JSON · CSV · Excel</text><text x="465" y="382" text-anchor="middle" class="t2">document.completed / needs_review …</text>
+  <path class="ln2" d="M72,276 L72,318"/><path class="ln2" d="M130,276 C250,300 400,300 460,318"/>
+  <path class="ln2" d="M315,345 C600,345 700,300 860,123" stroke-dasharray="5 4"/>
+  <text x="640" y="320" class="t2">a saved template is used for similar documents</text>
+</svg>
+<figcaption>Figure 2 — From upload to result. A document goes to exactly one of the three extraction paths; tables are extracted for all.</figcaption>
+</figure>
+
+<h3>5.1 Reading text</h3>
+<ul>
+  <li><b>PDF with a text layer</b>: pdfplumber returns text and word boxes; coordinates are stored as percentages of the page so overlays work at any zoom.</li>
+  <li><b>Scanned page</b> (fewer than 20 characters of text) and <b>images</b>: the page is rendered at 200 dpi and read by RapidOCR. OCR output gets spacing repair (e.g. <code>ShipTo:Warehouse4</code> → <code>Ship To: Warehouse 4</code>).</li>
+  <li>Every page is also rendered to PNG (2x) for the Review viewer.</li>
+</ul>
+<h3>5.2 Layout analysis</h3>
+<p>Words are grouped into visual lines; each line is split into <b>segments</b> wherever the gap is clearly wider than the usual word space (2.2× the median small gap, minimum 1% of page width) or the font size changes. Segments keep side-by-side columns apart, so an address on the left never merges into a <code>Room:</code> label on the right.</p>
+<h3>5.3 Classification and routing</h3>
+<ul>
+  <li>Built-in types are scored by vocabulary (e.g. <i>invoice, subtotal, bill to</i>); an MRZ line forces identity.</li>
+  <li>Templates are scored by how many of their labels/aliases appear, combined with the <b>letterhead fingerprint</b> (first lines of the sample they were saved from). A template built on a contract/passport/invoice also needs ≥ 75% fingerprint match, so another vendor's invoice does not pick up the wrong template.</li>
+  <li>Upload type <code>auto</code> uses the best match; <code>generic</code>, a built-in type, or a specific template can be forced. Re-run lets a reviewer apply a different choice later.</li>
+</ul>
+<h3>5.4 Built-in pipelines</h3>
+<table>
+<tr><th>Pipeline</th><th>Fields</th><th>Checks</th></tr>
+<tr><td>Contracts / NDAs</td><td>title, both parties, effective &amp; expiry dates, governing law, liability cap, confidentiality term, termination notice, risk rating</td><td>Risk from clause signals (unlimited liability, indemnity, missing cap)</td></tr>
+<tr><td>Passport / ID</td><td>type, name, number, issuing country, nationality, dates of birth/expiry, sex</td><td>ICAO 9303 TD3: document number, birth, expiry, personal number and composite check digits; expiry; MRZ vs printed zone. Labelled fields for ID cards / licences.</td></tr>
+<tr><td>Invoices</td><td>number, vendor, invoice &amp; due dates, currency, subtotal, tax, total</td><td>Subtotal + tax = total; line items sum = subtotal; status VALID / DISCREPANCY / UNVERIFIED</td></tr>
+</table>
+<h3>5.5 General extractor</h3>
+<ul>
+  <li><code>Label: value</code> pairs per layout segment, including several per line, with exact value boxes.</li>
+  <li>Form layouts without colons (label, wide gap, value), with safeguards for bilingual header rows and table rows.</li>
+  <li>Named people (<i>Mr./Mrs./Dr. …</i>), dates, amounts, emails, phones, URLs and reference numbers as additional entities.</li>
+  <li>Values are typed (date → ISO 8601, amounts and numbers → numeric, email).</li>
+</ul>
+<h3>5.6 Tables</h3>
+<p>A table starts at a header row of three or more short, non-numeric titles. Each column owns the strip from just left of its title to the next title. Following lines are assigned cell by cell; a line with no digits that sits within one row-gap below is merged into the row above (wrapped cells). The table ends at a clear vertical gap or a non-table line, and continues on the next page with or without a repeated header.</p>
+<h3>5.7 Optional local LLM</h3>
+<p>Disabled unless <code>LOCAL_LLM_URL</code> is set (any OpenAI-compatible server on your network). It is asked only for template fields the rules did not find; an answer is kept only if that exact text occurs in the document, is marked <code>local_llm</code> and is always flagged for review.</p>
+
+<!-- ============================================================ -->
+<h2 id="templates">6. Templates &amp; review</h2>
+<p>A <b>template</b> (table <code>custom_schemas</code>) lists the fields a document type has. Each field may carry a label, aliases, data type, required flag, confidence threshold, regex, allowed values, and a <b>page region</b>. Templates are created in Templates (admins), or by anyone from Review → <i>Save as Template</i>.</p>
+<table>
+<tr><th>Field attribute</th><th>Effect</th></tr>
+<tr><td><code>regex_pattern</code></td><td>Tried first; group 1 (or the whole match) is the value</td></tr>
+<tr><td><code>label</code>, <code>aliases</code></td><td>Matched against <code>Label: value</code> pairs and "Label value" lines</td></tr>
+<tr><td><code>region</code> + <code>locate: "region"</code></td><td>Text inside the box on the page; used first for fields drawn by a reviewer, or where a label repeats (e.g. two "Time" fields)</td></tr>
+<tr><td><code>data_type</code></td><td>text, number, currency, date, enum, email — values are converted and validated</td></tr>
+<tr><td><code>required</code>, <code>confidence_threshold</code></td><td>Missing or low-confidence values make the document need review</td></tr>
+<tr><td><code>base_pipeline</code> (template)</td><td>Run contracts/identity/invoices rules first, then the template's extra fields</td></tr>
+<tr><td><code>fingerprint</code> (template)</td><td>Letterhead text of the sample, used to recognise similar documents</td></tr>
+</table>
+<h3>Document Hub folders</h3>
+<ul>
+  <li>Works like Finder: <b>New Folder</b> creates one in the folder you are in (folders can nest), and a path bar (All Documents › Invoices › 2026) leads back up. The open folder is part of the address (<code>/documents?folder=…</code>), so Back/Forward and bookmarks work.</li>
+  <li>Upload: the dialog's <i>Save to folder</i> starts at the folder open in the Document Hub (top level elsewhere), and can create a folder. Documents uploaded with no folder stay at the top level.</li>
+  <li>Move documents by dragging them (or all checked ones) onto a folder or a path segment, or with <i>Move to…</i> after checking them (also on phones). Folders can be dragged into other folders.</li>
+  <li>Rename a folder in place. Deleting a folder never deletes documents: its documents and subfolders move up to where the folder was.</li>
+  <li>The row above the list holds <b>All Documents</b> (the top level), up to <b>three favourite folders</b> and <b>Templates</b> (documents read with a template, from every folder). An empty slot reads <i>+ Favourite folder</i> and lists folders to pin; the × on a favourite unpins it, and each folder row has a Favourite / Unpin button. Favourites are saved per user on the server (<code>folders.favorite_rank</code>), so they follow you to other devices.</li>
+  <li>Search looks in every folder and shows where each match is. Folders are private to their owner, like documents.</li>
+</ul>
+<h3>Review Studio</h3>
+<ul>
+  <li>Drag a box anywhere on the page to add a field: the text inside becomes the value, and the label beside or above becomes its name (editable at once). Click any field name to rename it; the printed label is kept as an alias for templates.</li>
+  <li>Only changed values are saved; each change records old and new value in the audit trail with the signed-in user.</li>
+  <li>Export (Excel or CSV) saves pending edits first. Delete removes the record, file, page images and audit trail.</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2 id="security">7. Security, sign-in &amp; roles</h2>
+<figure>
+<svg viewBox="0 0 1060 360" role="img" aria-label="Sign-in flows">
+  <defs><marker id="arr3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b6a99"/></marker></defs>
+  <style>.ln3{stroke:#5b6a99;stroke-width:1.6;fill:none;marker-end:url(#arr3)}</style>
+  <rect class="box a" x="20" y="140" width="140" height="70" rx="10"/><text x="90" y="170" text-anchor="middle" class="th">Login page</text><text x="90" y="190" text-anchor="middle" class="t2">/api/auth/config</text>
+  <rect class="box c" x="230" y="20" width="230" height="80" rx="10"/><text x="345" y="46" text-anchor="middle" class="th">Local</text><text x="345" y="66" text-anchor="middle" class="t2">username + password</text><text x="345" y="82" text-anchor="middle" class="t2">PBKDF2-SHA256 (600k rounds)</text>
+  <rect class="box r" x="230" y="135" width="230" height="80" rx="10"/><text x="345" y="161" text-anchor="middle" class="th">Okta (OIDC)</text><text x="345" y="181" text-anchor="middle" class="t2">auth code + PKCE → token</text><text x="345" y="197" text-anchor="middle" class="t2">→ userinfo (groups claim)</text>
+  <rect class="box g" x="230" y="250" width="230" height="80" rx="10"/><text x="345" y="276" text-anchor="middle" class="th">Active Directory / LDAP</text><text x="345" y="296" text-anchor="middle" class="t2">service bind → search user</text><text x="345" y="312" text-anchor="middle" class="t2">→ bind as user · memberOf</text>
+  <rect class="box v" x="530" y="135" width="200" height="80" rx="10"/><text x="630" y="161" text-anchor="middle" class="th">Group → role</text><text x="630" y="181" text-anchor="middle" class="t2">admin beats user</text><text x="630" y="197" text-anchor="middle" class="t2">default: user or refuse</text>
+  <rect class="box y" x="800" y="135" width="240" height="80" rx="10"/><text x="920" y="161" text-anchor="middle" class="th">Session</text><text x="920" y="181" text-anchor="middle" class="t2">HttpOnly cookie, 12 h</text><text x="920" y="197" text-anchor="middle" class="t2">only SHA-256 hash stored</text>
+  <path class="ln3" d="M160,165 C195,165 195,60 228,60"/><path class="ln3" d="M160,175 L228,175"/><path class="ln3" d="M160,185 C195,185 195,290 228,290"/>
+  <path class="ln3" d="M460,175 L528,175"/><path class="ln3" d="M460,290 C500,290 500,195 528,195"/><path class="ln3" d="M460,60 C640,60 760,60 920,133"/>
+  <path class="ln3" d="M730,175 L798,175"/>
+  <text x="620" y="40" class="t2">local accounts: role set by admin</text>
+  <text x="560" y="300" class="t2">Local admins can always sign in (break-glass), in every mode.</text>
+</svg>
+<figcaption>Figure 3 — The three sign-in methods share one session mechanism and one group-to-role table.</figcaption>
+</figure>
+<h3>7.1 Controls</h3>
+<table>
+<tr><th>Area</th><th>Control</th></tr>
+<tr><td>Temporary passwords</td><td>The first-run admin password and any password an administrator sets are temporary: until the person sets their own, the API refuses everything except changing it (403). The first-run password file is owner-only and deleted after the change</td></tr>
+<tr><td>Passwords</td><td>Salted PBKDF2-HMAC-SHA256, 600,000 iterations (OWASP 2023; older hashes keep working). New passwords must differ from the current one and are: at least 12 characters (<code>[security] password_min_length</code>), not containing the username, not trivially repetitive</td></tr>
+<tr><td>Sign-in throttling</td><td>5 failures for a username, or 30 from one client address, lock further attempts for 15 minutes (configurable in <code>[security]</code>). A wrong username takes as long as a wrong password (no user enumeration by timing). Every success, failure, lock-out and sign-out is written to <code>audit.log</code></td></tr>
+<tr><td>Sessions</td><td>Random 256-bit token in an <code>HttpOnly</code>, <code>SameSite=Lax</code> cookie (<code>Secure</code> over HTTPS); only its SHA-256 is stored; 12-hour lifetime; disabling a user ends their sessions; a password change or reset ends the person's other sessions</td></tr>
+<tr><td>Cross-site requests</td><td>Besides <code>SameSite</code>, every state-changing request authenticated by the cookie must carry an <code>Origin</code>/<code>Referer</code> of this server or of an allowed UI (<code>[cors]</code>); others get 403. API-key requests are not affected</td></tr>
+<tr><td>Browser hardening</td><td>Pages: strict <code>Content-Security-Policy</code> (scripts only from this server, no inline script, no framing), <code>X-Content-Type-Options: nosniff</code>, <code>X-Frame-Options: DENY</code>, <code>Referrer-Policy: same-origin</code>, <code>Permissions-Policy</code>, <code>Cross-Origin-Opener-Policy</code>; <code>Strict-Transport-Security</code> over HTTPS. API responses: <code>Cache-Control: no-store</code> (personal data is never cached). No <code>Server</code> header</td></tr>
+<tr><td>API keys</td><td>Stored as SHA-256; act as their creator; scopes can only narrow the creator's role; quota per key</td></tr>
+<tr><td>Okta</td><td>Authorization code with PKCE and state; claims read from the userinfo endpoint over TLS; client secret never returned by the API</td></tr>
+<tr><td>Stored secrets</td><td>The Okta client secret and the directory bind password are encrypted in the database (Fernet: AES-128-CBC + HMAC-SHA256) with a key from <code>[security] secret_key</code> / <code>IDP_SECRET_KEY</code>, or <code>storage/secret.key</code> (created on first start, owner-only). Secrets saved before 1.4 are encrypted on the next start</td></tr>
+<tr><td>LDAP</td><td>LDAPS or StartTLS with certificate validation; search input escaped (no LDAP injection); empty passwords refused (no anonymous bind); bind password masked</td></tr>
+<tr><td>Isolation</td><td>Every document endpoint checks <code>owner_id</code>; others' documents look non-existent (404)</td></tr>
+<tr><td>Admin surfaces</td><td>Templates, users, sign-in settings, API keys, webhooks, <code>/docs</code> and <code>/openapi.json</code> require the admin role</td></tr>
+<tr><td>Webhooks</td><td><code>X-DocuPulse-Signature: sha256=HMAC(secret, body)</code>; the secret itself is never sent</td></tr>
+<tr><td>Uploads</td><td>Extension allow-list; the content must match the extension (PDF/PNG/JPEG/TIFF/BMP/WebP signatures, text must be text), so renamed executables or HTML are refused; size limit enforced while reading (and from <code>Content-Length</code> before reading); at most <code>max_pages</code> pages processed; sanitised file names; page-image paths validated (no path traversal)</td></tr>
+<tr><td>Exports</td><td>CSV cells starting with <code>= + - @</code> (other than numbers) are prefixed with <code>'</code>, so a value read from a document cannot run as a spreadsheet formula. Excel files store values as text</td></tr>
+<tr><td>Webhooks</td><td>Destination must be <code>http(s)://</code> without embedded credentials; redirects are not followed</td></tr>
+<tr><td>Errors</td><td>Clients never see stack traces or internal messages: unexpected errors return a generic message and a <code>request_id</code>; validation errors name the field and problem but never echo the submitted value. The full error is in <code>app.log</code> under the same request id</td></tr>
+<tr><td>Audit</td><td>Per document (database, Audit button in Review): extraction, edits, renames, added/removed fields, approvals and rejections with user and time. System-wide (<code>audit.log</code>): sign-ins, sign-in failures and lock-outs, sign-outs, password changes, admin changes to sign-in settings and users, and every change made through the API (method, path, result, user, client address)</td></tr>
+<tr><td>Dependencies</td><td>Python 3.12 and pinned package versions with no known vulnerabilities (pip-audit, 2026-10-24); web UI production packages: 0 known vulnerabilities (npm audit). See 7.2</td></tr>
+</table>
+<div class="note">Webhook signing secrets are stored as entered (the server needs them to sign deliveries) and API keys/session tokens as hashes. Keep <code>storage/secret.key</code> out of shared backups (losing it only means re-entering the Okta secret and bind password), and supply the database password through <code>IDP_DB_PASSWORD</code> rather than <code>database.ini</code>.</div>
+
+<h3>7.2 Security checks and how to repeat them</h3>
+<table>
+<tr><th>Check</th><th>Tool</th><th>Result (2026-10-24)</th></tr>
+<tr><td>Python packages</td><td><code>pip-audit -r backend/requirements.txt</code></td><td>Before: 90 known vulnerabilities in 10 packages (Pillow, Starlette, python-multipart, pypdf, setuptools, anyio, certifi, pdfminer, python-dotenv, pip) — most fixes need Python 3.10+. After moving to Python 3.12 and the pinned versions: <b>none</b></td></tr>
+<tr><td>Python interpreter</td><td>python.org release notes</td><td>Python 3.9 reached end of life in October 2025 and gets no security fixes, so the minimum is now <b>3.11</b> and the recommended version <b>3.12</b> (security fixes until October 2028). Use the newest 3.12 patch release (3.12.15 or later at the time of writing): it fixes TLS, tarfile/zipfile and urllib issues (e.g. CVE-2026-19445, CVE-2026-19553, CVE-2026-15806)</td></tr>
+<tr><td>Web UI packages</td><td><code>npm audit</code> in <code>frontend/</code></td><td>Production packages: none. A build-tool issue (Vite dev server) is fixed by pinning vite 8.3.5 in <code>package.json</code> overrides</td></tr>
+<tr><td>Python code</td><td><code>bandit -r backend/app</code></td><td>No real issues; reviewed findings are false positives (SQL built only from fixed fragments with <code>?</code> parameters, masking constants, best-effort cleanup)</td></tr>
+<tr><td>Manual review</td><td>OWASP ASVS-style review</td><td>Sign-in, sessions, CSRF, headers, uploads, path traversal, SQL/LDAP injection, export injection, secrets, logging, errors — fixes listed in 7.1</td></tr>
+<tr><td>Regression tests</td><td>scripted HTTP checks</td><td>Headers, CSP, cross-site block, upload signature and size, traversal, webhook URL, CSV injection, lock-out, password policy, audit entries, no tokens in logs: all pass</td></tr>
+</table>
+<p><b>Still to do outside the application</b>: run it behind HTTPS (11.6) so cookies are <code>Secure</code> and HSTS applies; keep the server's OS and Python patched; restrict who can read <code>storage/</code>, <code>config/</code> and the database; forward <code>audit.log</code> to your SIEM; repeat the checks above before each release.</p>
+
+<!-- ============================================================ -->
+<h2 id="db">8. Database design</h2>
+<p>Twelve tables; all identifiers are text (prefixed IDs such as <code>doc_…</code>, <code>usr_…</code>, <code>schema-…</code>). Timestamps are ISO 8601 strings in UTC. Flexible structures (fields, metadata, settings) are stored as JSON text so the schema is identical across SQLite, PostgreSQL and SQL Server. Relationships are enforced by the application rather than foreign-key constraints, so documents can be deleted without cascades blocking and the same SQL runs on all three databases.</p>
+<figure>
+<svg viewBox="0 0 1060 800" role="img" aria-label="Entity relationship diagram">
+  <defs><marker id="arr4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b6a99"/></marker></defs>
+  <style>.ln4{stroke:#5b6a99;stroke-width:1.5;fill:none;marker-end:url(#arr4)}</style>
+  <!-- users -->
+  <g transform="translate(20,20)"><rect class="box v" width="230" height="200" rx="8"/><rect class="er-h" width="230" height="28" rx="8"/><text x="12" y="19" class="th">users</text>
+    <text x="12" y="48" class="er-pk">PK</text><text x="40" y="48" class="er-c">id</text>
+    <text x="40" y="66" class="er-c">username · auth_source  ◆</text><text x="40" y="84" class="er-c">display_name · email</text>
+    <text x="40" y="102" class="er-c">password_hash</text><text x="40" y="120" class="er-c">role · role_locked</text>
+    <text x="40" y="138" class="er-c">groups_json · is_active</text><text x="40" y="156" class="er-c">created_at · last_login</text>
+    <text x="12" y="184" class="t2">◆ unique together</text></g>
+  <!-- sessions -->
+  <g transform="translate(20,270)"><rect class="box v" width="230" height="110" rx="8"/><rect class="er-h" width="230" height="28" rx="8"/><text x="12" y="19" class="th">sessions</text>
+    <text x="12" y="48" class="er-pk">PK</text><text x="40" y="48" class="er-c">token_hash</text>
+    <text x="12" y="66" class="er-fk">FK</text><text x="40" y="66" class="er-c">user_id → users</text><text x="40" y="84" class="er-c">created_at · expires_at</text></g>
+  <!-- api_keys -->
+  <g transform="translate(20,420)"><rect class="box v" width="230" height="180" rx="8"/><rect class="er-h" width="230" height="28" rx="8"/><text x="12" y="19" class="th">api_keys</text>
+    <text x="12" y="48" class="er-pk">PK</text><text x="40" y="48" class="er-c">id</text><text x="12" y="66" class="er-fk">FK</text><text x="40" y="66" class="er-c">owner_id → users</text>
+    <text x="40" y="84" class="er-c">name · key_hash · key_prefix</text><text x="40" y="102" class="er-c">scopes_json</text>
+    <text x="40" y="120" class="er-c">quota_limit · quota_used</text><text x="40" y="138" class="er-c">is_active · created_at</text><text x="40" y="156" class="er-c">last_used</text></g>
+  <!-- documents -->
+  <g transform="translate(330,120)"><rect class="box a" width="260" height="290" rx="8"/><rect class="er-h" width="260" height="28" rx="8"/><text x="12" y="19" class="th">documents</text>
+    <text x="12" y="48" class="er-pk">PK</text><text x="40" y="48" class="er-c">id</text>
+    <text x="12" y="66" class="er-fk">FK</text><text x="40" y="66" class="er-c">owner_id → users</text>
+    <text x="12" y="84" class="er-fk">FK</text><text x="40" y="84" class="er-c">schema_id → custom_schemas</text>
+    <text x="40" y="102" class="er-c">title · doc_type · status</text><text x="40" y="120" class="er-c">file_name · file_path</text>
+    <text x="40" y="138" class="er-c">file_size_bytes · page_count</text><text x="40" y="156" class="er-c">overall_confidence</text>
+    <text x="40" y="174" class="er-c">needs_review</text><text x="40" y="192" class="er-c">fields_json (JSON)</text>
+    <text x="40" y="210" class="er-c">metadata_json (JSON)</text><text x="40" y="228" class="er-c">raw_text</text>
+    <text x="40" y="246" class="er-c">created_at · processed_at</text>
+    <text x="12" y="264" class="er-fk">FK</text><text x="40" y="264" class="er-c">folder_id → folders (null = top level)</text><text x="40" y="282" class="t2">index: owner_id</text></g>
+  <!-- audit -->
+  <g transform="translate(330,450)"><rect class="box a" width="260" height="150" rx="8"/><rect class="er-h" width="260" height="28" rx="8"/><text x="12" y="19" class="th">audit_logs</text>
+    <text x="12" y="48" class="er-pk">PK</text><text x="40" y="48" class="er-c">id</text><text x="12" y="66" class="er-fk">FK</text><text x="40" y="66" class="er-c">document_id → documents</text>
+    <text x="40" y="84" class="er-c">"timestamp" · "user"</text><text x="40" y="102" class="er-c">action · details_json</text><text x="40" y="126" class="t2">index: document_id</text></g>
+  <!-- schemas -->
+  <g transform="translate(665,20)"><rect class="box g" width="250" height="200" rx="8"/><rect class="er-h" width="250" height="28" rx="8"/><text x="12" y="19" class="th">custom_schemas (templates)</text>
+    <text x="12" y="48" class="er-pk">PK</text><text x="40" y="48" class="er-c">id</text>
+    <text x="40" y="66" class="er-c">name · document_type_code</text><text x="40" y="84" class="er-c">description</text>
+    <text x="40" y="102" class="er-c">fields_json (JSON)</text><text x="40" y="120" class="er-c">base_pipeline · fingerprint</text>
+    <text x="40" y="138" class="er-c">is_active</text><text x="40" y="156" class="er-c">created_at · updated_at</text></g>
+  <!-- webhooks -->
+  <g transform="translate(670,260)"><rect class="box y" width="250" height="150" rx="8"/><rect class="er-h" width="250" height="28" rx="8"/><text x="12" y="19" class="th">webhooks</text>
+    <text x="12" y="48" class="er-pk">PK</text><text x="40" y="48" class="er-c">id</text><text x="40" y="66" class="er-c">url · events_json · secret</text>
+    <text x="40" y="84" class="er-c">is_active · created_at</text><text x="40" y="102" class="er-c">successful_deliveries</text><text x="40" y="120" class="er-c">failed_deliveries</text></g>
+  <g transform="translate(670,450)"><rect class="box y" width="250" height="150" rx="8"/><rect class="er-h" width="250" height="28" rx="8"/><text x="12" y="19" class="th">webhook_logs</text>
+    <text x="12" y="48" class="er-pk">PK</text><text x="40" y="48" class="er-c">id</text><text x="12" y="66" class="er-fk">FK</text><text x="40" y="66" class="er-c">webhook_id → webhooks</text>
+    <text x="40" y="84" class="er-c">event · status_code · success</text><text x="40" y="102" class="er-c">payload_json · response_body</text><text x="40" y="120" class="er-c">"timestamp" · duration_ms</text></g>
+  <!-- settings -->
+  <g transform="translate(935,20)"><rect class="box" width="118" height="90" rx="8"/><rect class="er-h" width="118" height="28" rx="8"/><text x="8" y="19" class="th" style="font-size:12px">app_settings</text>
+    <text x="8" y="48" class="er-pk">PK</text><text x="30" y="48" class="er-c">"key"</text><text x="30" y="66" class="er-c">value_json</text></g>
+  <g transform="translate(935,130)"><rect class="box" width="118" height="90" rx="8"/><rect class="er-h" width="118" height="28" rx="8"/><text x="8" y="19" class="th" style="font-size:12px">schema_version</text>
+    <text x="30" y="48" class="er-c">version</text><text x="30" y="66" class="er-c">applied_at</text></g>
+  <!-- folders -->
+  <g transform="translate(330,640)"><rect class="box a" width="260" height="140" rx="8"/><rect class="er-h" width="260" height="28" rx="8"/><text x="12" y="19" class="th">folders</text>
+    <text x="12" y="48" class="er-pk">PK</text><text x="40" y="48" class="er-c">id</text>
+    <text x="12" y="66" class="er-fk">FK</text><text x="40" y="66" class="er-c">owner_id → users</text>
+    <text x="12" y="84" class="er-fk">FK</text><text x="40" y="84" class="er-c">parent_id → folders (null = top)</text>
+    <text x="40" y="102" class="er-c">name · created_at · favorite_rank</text><text x="40" y="124" class="t2">index: owner_id, parent_id</text></g>
+  <path class="ln4" d="M330,690 C290,690 290,390 328,390"/><text x="250" y="560" class="t2">0..1 : n</text>
+  <path class="ln4" d="M590,690 C640,690 640,740 592,740"/><text x="625" y="718" class="t2">tree</text>
+  <!-- relations -->
+  <path class="ln4" d="M250,100 C290,100 290,186 328,186"/><text x="290" y="128" class="t2">1 : n</text>
+  <path class="ln4" d="M135,220 L135,268"/><text x="142" y="250" class="t2">1 : n</text>
+  <path class="ln4" d="M100,220 C60,300 60,380 100,418"/>
+  <path class="ln4" d="M460,410 L460,448"/><text x="468" y="436" class="t2">1 : n</text>
+  <path class="ln4" d="M668,110 C630,110 630,204 592,204"/><text x="608" y="100" class="t2">0..1 : n</text>
+  <path class="ln4" d="M795,410 L795,448"/><text x="803" y="436" class="t2">1 : n</text>
+</svg>
+<figcaption>Figure 4 — Entity relationships. PK primary key, FK logical foreign key (enforced by the application). Quoted columns are reserved words and are always quoted in SQL.</figcaption>
+</figure>
+
+<h3>8.1 Tables</h3>
+<table>
+<tr><th>Table</th><th>Purpose</th><th>Notable columns</th></tr>
+<tr><td><code>documents</code></td><td>One row per uploaded document</td><td><code>owner_id</code> (isolation), <code>status</code>, <code>fields_json</code> (extracted fields with value, confidence, box, type, validation error, edit flags), <code>metadata_json</code> (classification, tables, entities, review reasons, OCR info), <code>raw_text</code></td></tr>
+<tr><td><code>folders</code></td><td>Each person's Document Hub folders (a tree)</td><td><code>owner_id</code> (private like documents), <code>parent_id</code> (null = top level), <code>name</code> unique within its folder, <code>favorite_rank</code> (1–3 when pinned as a favourite tab, else null; upgrade 3); <code>documents.folder_id</code> places a document in one (null = top level)</td></tr>
+<tr><td><code>audit_logs</code></td><td>History per document</td><td><code>"user"</code> is the signed-in username; <code>details_json</code> holds old/new values</td></tr>
+<tr><td><code>custom_schemas</code></td><td>Templates incl. the three built-in ones</td><td><code>fields_json</code> (field definitions), <code>base_pipeline</code>, <code>fingerprint</code>; deleted templates are deactivated and their code freed</td></tr>
+<tr><td><code>users</code></td><td>Local, Okta and LDAP users</td><td>Unique (<code>username</code>, <code>auth_source</code>); <code>role_locked</code> = set by hand, not by groups</td></tr>
+<tr><td><code>sessions</code></td><td>Browser sign-ins</td><td>Token hash only; expired rows purged at each sign-in</td></tr>
+<tr><td><code>api_keys</code></td><td>Programmatic access</td><td>Hash of the key, owner, scopes, quota</td></tr>
+<tr><td><code>webhooks</code>, <code>webhook_logs</code></td><td>Subscriptions and delivery history</td><td>Events: document.completed, document.needs_review, document.approved, document.rejected, document.failed</td></tr>
+<tr><td><code>app_settings</code></td><td>Key/value JSON settings</td><td><code>auth</code>: sign-in mode, Okta, LDAP, group roles, default role</td></tr>
+<tr><td><code>schema_version</code></td><td>Marks the database as set up, and which upgrades it has</td><td>One row per version. On start, a database without it is set up from <code>db/schema/&lt;engine&gt;.sql</code>; one that has it only gets the upgrade files in <code>db/schema/upgrades/&lt;engine&gt;_&lt;version&gt;_*.sql</code> newer than its highest version (version 2 added folders, version 3 favourite folders, version 4 temporary-password flag). A DBA can run those files by hand instead and add the row.</td></tr>
+</table>
+<h3>8.2 Dialect notes</h3>
+<table>
+<tr><th></th><th>SQLite</th><th>PostgreSQL</th><th>SQL Server</th></tr>
+<tr><td>Schema file</td><td><code>db/schema/sqlite.sql</code></td><td><code>db/schema/postgresql.sql</code></td><td><code>db/schema/sqlserver.sql</code> (GO batches)</td></tr>
+<tr><td>Text types</td><td>TEXT</td><td>VARCHAR(n), TEXT for JSON/large</td><td>NVARCHAR(n), NVARCHAR(MAX) for JSON/large</td></tr>
+<tr><td>Driver</td><td>built in</td><td><code>psycopg[binary]</code></td><td><code>pymssql</code> (no ODBC needed)</td></tr>
+<tr><td>Reserved names</td><td colspan="3"><code>"user"</code>, <code>"timestamp"</code>, <code>"key"</code> are quoted in all SQL; SQL Server sessions run with <code>QUOTED_IDENTIFIER ON</code></td></tr>
+<tr><td>Portable SQL</td><td colspan="3">Application SQL avoids LIMIT/TOP, string concatenation operators, date functions and upserts; these are done in Python</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="api">9. API reference</h2>
+<p>All endpoints are under <code>/api</code>. Authenticate with the browser session or an <code>X-API-Key</code> header. Machine-readable spec: <a href="/openapi.json">/openapi.json</a>. The list below is generated live from the running server.</p>
+<p><b>Errors</b> are JSON: <code>{"detail": "…", "request_id": "…"}</code>; validation errors (422) add <code>"errors": [{"field": "…", "problem": "…"}]</code> without echoing values; 500 errors carry only a generic message and the <code>request_id</code>. Every response has an <code>X-Request-ID</code> header. Browser (cookie) requests that change data must come from this server's or an allowed UI's origin; API-key requests are unaffected. Uploads must match their extension's file signature.</p>
+<pre># Upload any document and wait for the result
+curl -X POST "http://&lt;server&gt;:8000/api/v1/documents/upload" \
+  -H "X-API-Key: dp_live_…" -F "file=@invoice.pdf" -F "doc_type=auto" -F "sync=true"
+
+# Make a folder and upload into it (folder_id from the response, or GET /api/v1/folders)
+curl -X POST "http://&lt;server&gt;:8000/api/v1/folders" -H "X-API-Key: dp_live_…" \
+  -H "Content-Type: application/json" -d '{"name": "Invoices 2026"}'
+curl -X POST "http://&lt;server&gt;:8000/api/v1/documents/upload" -H "X-API-Key: dp_live_…" \
+  -F "file=@invoice.pdf" -F "folder_id=fld_…"
+
+# Download the result as Excel
+curl -H "X-API-Key: dp_live_…" -o result.xlsx "http://&lt;server&gt;:8000/api/v1/documents/&lt;doc_id&gt;/export/xlsx"</pre>
+<div id="eps">Loading endpoints…</div>
+
+<!-- ============================================================ -->
+<h2 id="infra">10. Infrastructure</h2>
+<figure>
+<svg viewBox="0 0 1060 330" role="img" aria-label="Deployment topology">
+  <defs><marker id="arr5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b6a99"/></marker></defs>
+  <style>.ln5{stroke:#5b6a99;stroke-width:1.6;fill:none;marker-end:url(#arr5)}</style>
+  <rect class="zone" x="10" y="20" width="1040" height="290" rx="14"/><text x="26" y="40" class="zl">Corporate intranet</text>
+  <rect class="box a" x="30" y="120" width="150" height="70" rx="10"/><text x="105" y="150" text-anchor="middle" class="th">Users</text><text x="105" y="170" text-anchor="middle" class="t2">browsers</text>
+  <rect class="box" x="230" y="110" width="170" height="90" rx="10"/><text x="315" y="140" text-anchor="middle" class="th">Reverse proxy</text><text x="315" y="160" text-anchor="middle" class="t2">HTTPS :443 · TLS cert</text><text x="315" y="176" text-anchor="middle" class="t2">upload limit ≥ 26 MB</text>
+  <rect class="box c" x="450" y="90" width="220" height="130" rx="10"/><text x="560" y="118" text-anchor="middle" class="th">App server</text><text x="560" y="138" text-anchor="middle" class="t2">Python 3.12 · DocuPulse :8000</text><text x="560" y="156" text-anchor="middle" class="t2">4 vCPU · 8 GB RAM</text><text x="560" y="174" text-anchor="middle" class="t2">50 GB+ disk for storage/</text><text x="560" y="192" text-anchor="middle" class="t2">systemd / Windows service</text>
+  <rect class="box y" x="730" y="60" width="160" height="70" rx="10"/><text x="810" y="90" text-anchor="middle" class="th">SQL Server</text><text x="810" y="110" text-anchor="middle" class="t2">:1433 (or Postgres :5432)</text>
+  <rect class="box g" x="730" y="160" width="160" height="70" rx="10"/><text x="810" y="190" text-anchor="middle" class="th">Domain controllers</text><text x="810" y="210" text-anchor="middle" class="t2">LDAPS :636</text>
+  <rect class="box" x="920" y="60" width="115" height="70" rx="10"/><text x="977" y="90" text-anchor="middle" class="th">Backups</text><text x="977" y="110" text-anchor="middle" class="t2">DB + storage/</text>
+  <rect class="box r" x="920" y="160" width="115" height="70" rx="10"/><text x="977" y="190" text-anchor="middle" class="th">Okta</text><text x="977" y="210" text-anchor="middle" class="t2">only if used</text>
+  <path class="ln5" d="M180,155 L228,155"/><path class="ln5" d="M400,155 L448,155"/><path class="ln5" d="M670,130 C700,130 700,95 728,95"/><path class="ln5" d="M670,180 C700,180 700,195 728,195"/>
+  <path class="ln5" d="M890,95 L918,95"/><path class="ln5" d="M670,205 C800,270 930,260 975,232" stroke-dasharray="5 4"/>
+  <text x="560" y="270" text-anchor="middle" class="t2">Outbound internet is not required (except to reach Okta, if Okta sign-in is chosen).</text>
+</svg>
+<figcaption>Figure 5 — Recommended production topology.</figcaption>
+</figure>
+<h3>10.1 Sizing</h3>
+<table>
+<tr><th>Load</th><th>CPU</th><th>RAM</th><th>Disk</th><th>Notes</th></tr>
+<tr><td>Pilot (≤ 2,000 docs/month, mostly text PDFs)</td><td>2 vCPU</td><td>4 GB</td><td>20 GB</td><td>SQLite is fine</td></tr>
+<tr><td>Department (≤ 20,000 docs/month, mixed scans)</td><td>4 vCPU</td><td>8 GB</td><td>100 GB</td><td>SQL Server or PostgreSQL recommended</td></tr>
+<tr><td>Heavy OCR (&gt; 20,000 scanned pages/month)</td><td>8+ vCPU</td><td>16 GB</td><td>250 GB+</td><td>OCR is CPU-bound; use <code>sync=false</code> for bulk API loads</td></tr>
+</table>
+<p>Rough cost per page: text PDF ≈ 0.1–0.3 s; scanned page via OCR ≈ 1–4 s on one core. Storage per document ≈ original file + ~0.3–1 MB of page images per page. The application itself (Python environment) needs ≈ 350 MB; the built UI ≈ 1.2 MB.</p>
+<h3>10.2 Network</h3>
+<table>
+<tr><th>From</th><th>To</th><th>Port</th><th>Required</th></tr>
+<tr><td>Users / reverse proxy</td><td>App server</td><td>8000/tcp (or 443 via proxy)</td><td>Yes</td></tr>
+<tr><td>App server</td><td>Database server</td><td>1433 (SQL Server) / 5432 (PostgreSQL)</td><td>If not SQLite</td></tr>
+<tr><td>App server</td><td>Domain controllers</td><td>636 (LDAPS) or 389 + StartTLS</td><td>If AD/LDAP sign-in</td></tr>
+<tr><td>App server</td><td>Okta</td><td>443</td><td>If Okta sign-in</td></tr>
+<tr><td>App server</td><td>Local LLM server</td><td>e.g. 11434</td><td>If enabled</td></tr>
+<tr><td>App server</td><td>Webhook receivers</td><td>as configured</td><td>If webhooks used</td></tr>
+</table>
+<h3>10.3 Supported platforms</h3>
+<p>macOS 12+, Linux x86-64 (RHEL/Rocky 8+, Ubuntu 20.04+), Windows Server 2019+ / Windows 10+ (x64). Python 3.9–3.12. Browsers: current Chrome, Edge, Firefox, Safari. The code uses only portable paths and has no operating-system-specific parts; every Python package used ships ready-built wheels for all three systems.</p>
+
+<!-- ============================================================ -->
+<h2 id="deploy">11. Deployment</h2>
+<p>Ready-made scripts for each operating system are in the <code>build/</code> folder:</p>
+<table>
+<tr><th>Task</th><th>Mac / Linux</th><th>Windows</th></tr>
+<tr><td>Make an install package (on a machine with internet)</td><td><code>build/mac-linux/make-package.sh &lt;windows|linux|mac-arm|mac-intel&gt; [python] [driver]</code></td><td>run the .sh from any Mac/Linux machine with target <code>windows</code></td></tr>
+<tr><td>Install (Python environment, packages, UI build)</td><td><code>build/mac-linux/install.sh</code></td><td><code>build\windows\install.bat</code></td></tr>
+<tr><td>Start in the background</td><td><code>build/mac-linux/start.sh</code></td><td><code>build\windows\start.bat</code></td></tr>
+<tr><td>Stop</td><td><code>build/mac-linux/stop.sh</code></td><td><code>build\windows\stop.bat</code></td></tr>
+<tr><td>Status / health</td><td><code>build/mac-linux/status.sh</code></td><td><code>build\windows\status.bat</code></td></tr>
+</table>
+<p>The start scripts wait until <code>/api/health</code> answers, keep the process number in <code>backend/storage/server.pid</code> and log to <code>backend/storage/logs/</code>. The .bat files run the matching .ps1 with Windows PowerShell, so no execution-policy change is needed.</p>
+
+<h3>11.1 Make an install package (on a machine with internet)</h3>
+<p>Do not copy the development folder to a server: most of it is this machine's own tooling. A working folder is about 670 MB — the Python environment for this operating system (<code>venv/</code>, ~360 MB, unusable on another OS), the UI build tools (<code>frontend/node_modules/</code>, ~280 MB, not needed at run time), and your own documents, databases, backups and logs in <code>backend/storage/</code>. Instead, build a clean package:</p>
+<pre>build/mac-linux/make-package.sh windows 3.12            # Windows server, Python 3.12, with the SQL Server driver (pymssql)
+build/mac-linux/make-package.sh linux 3.12 pymssql      # Linux server
+build/mac-linux/make-package.sh linux 3.12 "psycopg[binary]"   # Linux server with PostgreSQL</pre>
+<p>It writes <code>../IDP_dist/DocuPulse-IDP-&lt;version&gt;-&lt;target&gt;/</code> and a <code>.zip</code> of it (about 160 MB for Windows), next to the project folder, without changing the project:</p>
+<table>
+<tr><th>Included</th><th>Left out</th></tr>
+<tr><td>Source code, the built web UI (<code>frontend/dist</code>), <code>.example</code> config templates, database schema files, install/start/stop scripts, README, licences, an <code>INSTALL.txt</code>, and <code>build/wheels/</code>: every Python package for the target OS and Python version (~158 MB; OCR models are inside)</td><td><code>venv</code>, <code>node_modules</code>, <code>backend/storage</code> (documents, page images, SQLite database, <code>*.bak</code> backups, logs, <code>secret.key</code>, the first-run password file), the live <code>server.ini</code> / <code>database.ini</code> / <code>auth.ini</code> (the server makes its own from the templates), caches</td></tr>
+</table>
+<p>The Python version must match the one installed on the server. The target needs no internet and no Node.js. On <b>Windows</b> the OCR engine (ONNX Runtime) needs the <b>Microsoft Visual C++ Redistributable 2015–2022 (x64)</b>, present on most servers; copy its installer along if not. No other system libraries are needed (the headless OpenCV build is used).</p>
+
+<h3>11.2 Install on the server (no internet)</h3>
+<p>Copy the package (or unzip it) to the server, e.g. <code>C:\DocuPulse</code> or <code>/opt/docupulse</code>, then:</p>
+<pre># Linux / macOS (Python 3.12 installed; 3.11 minimum)
+build/mac-linux/install.sh
+
+# Windows (Python 3.12 installed from python.org)
+build\windows\install.bat</pre>
+<p>The install scripts create <code>venv/</code>, install from <code>build/wheels</code> when present (otherwise from the internet), use the headless OpenCV build on Linux and Windows servers (no display libraries needed), and build the UI only if <code>frontend/dist</code> is missing and Node.js 22 or 24 is available (Angular supports only even, LTS Node releases; with another version the script says so and skips the build).</p>
+
+<h3>11.3 Choose the database</h3>
+<p>Edit <code>backend/config/database.ini</code> (created from the example on first start, or copy it yourself):</p>
+<pre>[database]
+engine = sqlserver
+
+[sqlserver]
+host = sql01.corp.local
+port = 1433
+name = docupulse
+user = idp_app
+password =                 ; leave empty and set IDP_DB_PASSWORD instead</pre>
+<p>For SQL Server or PostgreSQL, create an empty database and a login first (see the header of the schema file). The DBA can also run <code>backend/db/schema/sqlserver.sql</code> by hand; the app then finds the tables and skips setup.</p>
+
+<h3>11.4 First start</h3>
+<pre>build/mac-linux/start.sh            # Windows: build\windows\start.bat
+                                    # host/port etc. from backend/config/server.ini; set IDP_DB_PASSWORD first if used</pre>
+<p>The log shows the database in use, then either <i>"Database tables created from db/schema/…"</i> (first boot) or nothing further (already set up), then <i>"Sign-in method from auth.ini: local"</i>.</p>
+<p><b>First run on a new server</b> (any database: SQLite, SQL Server or PostgreSQL — whenever it has no local administrator yet):</p>
+<ol>
+  <li>The server creates the local <b>admin</b> account with a <b>temporary password</b>, written to <code>backend/storage/initial_admin_password.txt</code> (readable only by the account the service runs as). The log and console say <i>"FIRST RUN: created the local administrator 'admin' with a temporary password, saved in …"</i> — the password itself is never logged. To choose it yourself instead, set <code>IDP_ADMIN_PASSWORD</code> before the first start.</li>
+  <li>Sign in as <code>admin</code> with it. The app asks for a new password before anything else works (the API answers 403 to every other call until then).</li>
+  <li>Once changed, the file is deleted automatically.</li>
+</ol>
+<p>The same rule applies to passwords an administrator sets for someone (a new local user, or a reset): they are temporary and must be changed at the next sign-in. <code>reset_admin.py</code> on the server sets a password you choose yourself, so it is not temporary.</p>
+
+<h3>11.5 Run as a service</h3>
+<pre># Linux: /etc/systemd/system/docupulse.service
+[Unit]
+Description=DocuPulse IDP
+After=network-online.target
+
+[Service]
+User=docupulse
+WorkingDirectory=/opt/docupulse/backend
+Environment=IDP_HOST=127.0.0.1 IDP_PORT=8000 IDP_RELOAD=0
+EnvironmentFile=/etc/docupulse.env          # IDP_DB_PASSWORD=… (chmod 600)
+ExecStart=/opt/docupulse/venv/bin/python run.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target</pre>
+<p>Windows: in Task Scheduler create a task that runs <code>build\windows\start.bat</code> "At startup", "Run whether user is logged on or not" (or wrap <code>venv\Scripts\python.exe run.py</code> in <code>backend</code> as a service with NSSM). Set <code>IDP_DB_PASSWORD</code> as a system environment variable if used.</p>
+
+<h3>11.6 Reverse proxy with TLS (recommended)</h3>
+<pre># nginx
+server {
+  listen 443 ssl;
+  server_name idp.corp.local;
+  ssl_certificate     /etc/pki/idp.crt;
+  ssl_certificate_key /etc/pki/idp.key;
+  client_max_body_size 30m;                  # above IDP_MAX_UPLOAD_MB
+  proxy_read_timeout 300s;                   # large scanned PDFs
+  location / {
+    proxy_pass http://127.0.0.1:8000;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-Proto https;
+  }
+}</pre>
+<p>With HTTPS in front, start Uvicorn with <code>--proxy-headers</code> (or keep it bound to 127.0.0.1) so session cookies are issued with the <code>Secure</code> flag. On IIS use URL Rewrite + ARR with the same limits.</p>
+
+<h3>11.7 Layered deployment (UI, API and database on separate servers)</h3>
+<ol>
+  <li><b>Database server</b>: create the database and login; optionally run <code>backend/db/schema/&lt;engine&gt;.sql</code>. Open its port (1433 / 5432) to the API server only.</li>
+  <li><b>API server</b>: install as in 11.2. In <code>backend/config/database.ini</code> point to the database server. In <code>backend/config/server.ini</code>:
+<pre>[server]
+host = 0.0.0.0
+port = 8000
+
+[frontend]
+serve_frontend = false
+frontend_url = https://idp.corp.local
+
+[cors]
+allowed_origins = https://idp.corp.local
+
+[session]
+cookie_samesite = lax          ; UI and API under the same parent domain (corp.local)
+cookie_secure = auto</pre></li>
+  <li><b>Web server</b>: copy <code>frontend/dist/</code> to any static web server (IIS, nginx, Apache). Edit <code>config.js</code> there:
+<pre>window.IDP_CONFIG = { apiBaseUrl: "https://idp-api.corp.local" };</pre>
+  Configure the web server to return <code>index.html</code> for unknown paths (single-page app: addresses like <code>/review/&lt;id&gt;</code>) and not to cache <code>index.html</code>, <code>config.js</code>, <code>ngsw.json</code> and <code>ngsw-worker.js</code>. For nginx:
+<pre>location / { try_files $uri $uri/ /index.html; }
+location ~ ^/(index\.html|config\.js|ngsw\.json|ngsw-worker\.js)$ { add_header Cache-Control no-cache; }</pre>
+  On IIS, add a URL Rewrite rule that sends requests for files that do not exist to <code>/index.html</code>, and serve <code>.webmanifest</code> as <code>application/manifest+json</code>.</li>
+  <li><b>Okta</b> (if used): redirect URI is the API's address: <code>https://idp-api.corp.local/api/auth/okta/callback</code>; after sign-in users are sent to <code>frontend_url</code>.</li>
+</ol>
+<div class="note">Sign-in uses a cookie set by the API. Keep the UI and API on the <b>same site</b> (same parent domain, e.g. <code>idp.corp.local</code> and <code>idp-api.corp.local</code>) so <code>cookie_samesite = lax</code> works. Only if they are on unrelated domains, use <code>cookie_samesite = none</code>, which requires HTTPS on both. Alternatively, a reverse proxy can serve the UI and forward <code>/api</code> and <code>/docs</code> to the API on one address; then leave <code>apiBaseUrl</code> empty and no CORS entry is needed.</div>
+
+<h3>11.8 Configure sign-in</h3>
+<p>The sign-in method is chosen in <code>backend/config/auth.ini</code> (created from <code>auth.example.ini</code> on first start), read at every start:</p>
+<table>
+<tr><th><code>[signin] mode</code></th><th>Meaning</th></tr>
+<tr><td><code>local</code> (default)</td><td>Usernames and passwords managed in the app</td></tr>
+<tr><td><code>ldap</code></td><td>Active Directory / LDAP with the <code>[ldap]</code> settings in the file</td></tr>
+<tr><td><code>okta</code></td><td>Okta with the <code>[okta]</code> settings in the file</td></tr>
+<tr><td><code>ui</code></td><td>The file is ignored; administrators choose the method in Admin Settings → Users &amp; Sign-in</td></tr>
+</table>
+<ul>
+  <li><b>The file wins.</b> With <code>local</code>, <code>ldap</code> or <code>okta</code>, each start writes the method and its settings into the database, and Admin Settings shows them read-only with the file's location (an attempt to change them through the API gets 409). Group roles stay editable in Admin Settings unless the file's <code>[roles]</code> section lists groups. A file left untouched means Local sign-in.</li>
+  <li><b>Secrets go in environment variables</b>: <code>IDP_OKTA_CLIENT_SECRET</code>, <code>IDP_LDAP_BIND_PASSWORD</code> (they override the file; an empty value keeps the one already stored). They are stored encrypted (7.1). Any other key can be overridden the same way: <code>IDP_AUTH_MODE</code>, <code>IDP_OKTA_ISSUER</code>, <code>IDP_LDAP_SERVER_URL</code>, …</li>
+  <li><b>Incomplete settings</b> (e.g. <code>mode = okta</code> without an issuer) are reported as an error in <code>app.log</code> at start; only local administrators can sign in until the file is fixed.</li>
+  <li>The local <code>admin</code> account always works as a backup login, in every mode.</li>
+</ul>
+<p>Example for Active Directory:</p>
+<pre>[signin]
+mode = ldap
+
+[ldap]
+server_url = ldaps://dc01.corp.local:636
+bind_dn = CN=svc-idp,OU=Service Accounts,DC=corp,DC=local
+user_base_dn = DC=corp,DC=local
+
+[roles]
+IDP-Admins = admin
+IDP-Users = user
+default_role = none
+
+# and in the service's environment:  IDP_LDAP_BIND_PASSWORD=…</pre>
+<p>With <code>mode = ui</code>, configure it in the app instead:</p>
+<ol>
+  <li>Sign in as the local admin → <b>Users &amp; Sign-in</b>.</li>
+  <li><b>AD/LDAP</b>: server <code>ldaps://dc01.corp.local:636</code>, search base, service account, filter <code>(&amp;(objectClass=user)(sAMAccountName={username}))</code>. Use <i>Test directory</i> with a real user; it shows their groups and resulting role.</li>
+  <li><b>Okta</b>: create an OIDC Web app, add redirect URI <code>https://idp.corp.local/api/auth/okta/callback</code>, add a <code>groups</code> claim; enter issuer, client ID/secret; <i>Test Okta connection</i>.</li>
+  <li><b>Group roles</b>: map e.g. <code>IDP-Admins</code> → Admin, <code>IDP-Users</code> → User; choose whether people in no mapped group are refused.</li>
+  <li>Switch the sign-in method and save. The local admin keeps working as a backup.</li>
+</ol>
+
+<h3 id="addresses">11.9 Hostnames, ports, IP addresses and load balancers</h3>
+<p>No address is built into the code: every hostname, port and IP is set in a file (or environment variable), so a server rename, a new port or a load balancer in front needs only the edits below and a restart. Where each one lives:</p>
+<table>
+<tr><th>What changes</th><th>Where</th><th>Setting</th></tr>
+<tr><td>Port / interface the <b>API</b> listens on</td><td><code>backend/config/server.ini</code></td><td><code>[server] host</code> (<code>0.0.0.0</code> = all interfaces, or one IP) and <code>port</code>; or <code>IDP_HOST</code> / <code>IDP_PORT</code>. Restart the service. The start/stop/status scripts read the same values</td></tr>
+<tr><td>Port / hostname the <b>web UI</b> is served on</td><td>single-server mode: same as the API (the API serves the UI). Separate UI: your web server (nginx <code>listen</code> / <code>server_name</code>, IIS bindings)</td><td>The UI itself has no port; it is static files</td></tr>
+<tr><td>Where the <b>UI finds the API</b></td><td><code>frontend/dist/config.js</code> on the UI web server (no rebuild)</td><td><code>apiBaseUrl: "https://idp-api.corp.local"</code>; empty when the UI and API share one address (single server, or a proxy forwarding <code>/api</code> and <code>/docs</code>)</td></tr>
+<tr><td>Which UI addresses may <b>call the API</b> with sign-in cookies</td><td><code>server.ini</code></td><td><code>[cors] allowed_origins = https://idp.corp.local,https://idp-lb.corp.local</code> (scheme + host + port, exactly as in the browser's address bar; comma-separated). Not needed when UI and API share one address</td></tr>
+<tr><td>Where people <b>land after Okta sign-in</b></td><td><code>server.ini</code></td><td><code>[frontend] frontend_url = https://idp.corp.local</code> (empty in single-server mode)</td></tr>
+<tr><td><b>Okta redirect URI</b></td><td>Admin Settings → Users &amp; Sign-in, and the Okta app</td><td><code>https://&lt;public API address&gt;/api/auth/okta/callback</code> — must be identical in both places</td></tr>
+<tr><td><b>Session cookie</b> across hostnames</td><td><code>server.ini [session]</code></td><td><code>cookie_samesite = lax</code> while UI and API share a parent domain (<code>idp.corp.local</code> + <code>idp-api.corp.local</code>); <code>none</code> only for unrelated domains (needs HTTPS). The cookie is host-only, so a new hostname means signing in again</td></tr>
+<tr><td><b>Proxy / load balancer</b> addresses</td><td><code>server.ini [security]</code></td><td><code>trusted_proxies = 10.20.0.11,10.20.0.12</code> — the IPs the API sees requests coming from; only their <code>X-Forwarded-For/-Proto</code> are believed (real client address in logs and lock-outs, HTTPS detection for Secure cookies)</td></tr>
+<tr><td><b>Database</b> server</td><td><code>backend/config/database.ini</code></td><td><code>host</code>, <code>port</code> (SQL Server named instance: <code>host = server\INSTANCE</code>); or <code>IDP_DB_HOST</code> / <code>IDP_DB_PORT</code></td></tr>
+<tr><td><b>Directory</b> (AD/LDAP) or local LLM servers</td><td>Admin Settings (LDAP), <code>server.ini [local_llm] url</code></td><td>e.g. <code>ldaps://dc02.corp.local:636</code></td></tr>
+<tr><td>Dev UI (developers only)</td><td>environment</td><td><code>IDP_API_URL=http://idp-api:8000 npx ng serve --host 0.0.0.0 --port 4300</code></td></tr>
+</table>
+
+<h4>Running several API servers behind a load balancer</h4>
+<figure>
+<svg viewBox="0 0 1060 250" role="img" aria-label="Load-balanced deployment">
+  <defs><marker id="arr9" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b6a99"/></marker></defs>
+  <style>.ln9{stroke:#5b6a99;stroke-width:1.6;fill:none;marker-end:url(#arr9)}</style>
+  <rect class="box a" x="20" y="95" width="150" height="60" rx="10"/><text x="95" y="122" text-anchor="middle" class="th">Browsers</text><text x="95" y="140" text-anchor="middle" class="t2">https://idp.corp.local</text>
+  <rect class="box r" x="230" y="85" width="190" height="80" rx="10"/><text x="325" y="112" text-anchor="middle" class="th">Load balancer / nginx</text><text x="325" y="130" text-anchor="middle" class="t2">TLS · health check</text><text x="325" y="146" text-anchor="middle" class="t2">/api/health</text>
+  <rect class="box c" x="490" y="20" width="200" height="60" rx="10"/><text x="590" y="46" text-anchor="middle" class="th">API instance 1</text><text x="590" y="64" text-anchor="middle" class="t2">10.20.1.21:8000</text>
+  <rect class="box c" x="490" y="95" width="200" height="60" rx="10"/><text x="590" y="121" text-anchor="middle" class="th">API instance 2</text><text x="590" y="139" text-anchor="middle" class="t2">10.20.1.22:8000</text>
+  <rect class="box c" x="490" y="170" width="200" height="60" rx="10"/><text x="590" y="196" text-anchor="middle" class="th">API instance N</text><text x="590" y="214" text-anchor="middle" class="t2">same config, same key</text>
+  <rect class="box g" x="780" y="40" width="250" height="60" rx="10"/><text x="905" y="66" text-anchor="middle" class="th">SQL Server / PostgreSQL</text><text x="905" y="84" text-anchor="middle" class="t2">one database for all</text>
+  <rect class="box y" x="780" y="150" width="250" height="60" rx="10"/><text x="905" y="176" text-anchor="middle" class="th">Shared storage (NFS / SMB)</text><text x="905" y="194" text-anchor="middle" class="t2">[storage] dir on every instance</text>
+  <path class="ln9" d="M170,125 L228,125"/><path class="ln9" d="M420,115 C455,115 455,50 488,50"/><path class="ln9" d="M420,125 L488,125"/><path class="ln9" d="M420,135 C455,135 455,200 488,200"/>
+  <path class="ln9" d="M690,50 C735,50 735,70 778,70"/><path class="ln9" d="M690,125 C735,125 735,80 778,80"/><path class="ln9" d="M690,200 C735,200 735,185 778,185"/>
+</svg>
+<figcaption>Figure 9 — Several identical API instances behind a load balancer, sharing one database and one storage folder.</figcaption>
+</figure>
+<ul>
+  <li><b>No sticky sessions needed.</b> Sign-in sessions live in the database, and an Okta sign-in in progress travels in a short-lived encrypted cookie, so any instance can answer any request.</li>
+  <li><b>One database</b> (SQL Server or PostgreSQL; SQLite is for a single server only) and <b>one shared storage folder</b>: point <code>[storage] dir</code> on every instance at the same NFS/SMB share (uploads, page images, <code>secret.key</code>). With <code>IDP_SECRET_KEY</code> set instead, use the same value on every instance.</li>
+  <li><b>Same configuration everywhere</b>: copy <code>server.ini</code> and <code>database.ini</code> to each instance; set <code>host = 0.0.0.0</code> (or the instance IP) and list the load balancer's addresses in <code>[security] trusted_proxies</code>.</li>
+  <li><b>Health check</b>: <code>GET /api/health</code> (no sign-in, 200 when ready).</li>
+  <li><b>Forward headers</b> from the load balancer: <code>Host</code> (the public hostname), <code>X-Forwarded-For</code>, <code>X-Forwarded-Proto</code> and optionally <code>X-Request-ID</code>. nginx:
+<pre>upstream idp_api { server 10.20.1.21:8000; server 10.20.1.22:8000; }
+server {
+  listen 443 ssl; server_name idp.corp.local;
+  client_max_body_size 30m;
+  location / {
+    proxy_pass http://idp_api;
+    proxy_set_header Host $host;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header X-Request-ID $request_id;
+    proxy_read_timeout 300s;   # large scanned PDFs take a while with sync=true
+  }
+}</pre></li>
+  <li><b>Upgrades</b>: a release that changes the database upgrades it on start. Start one instance first, wait for <code>/api/health</code>, then start the rest.</li>
+  <li><b>Per-instance limits</b>: sign-in lock-out counters are kept per instance, so with N instances a guesser gets at most N × the limit before every instance locks; lower <code>login_max_failures</code> if that matters. Logs are written per instance (<code>[logging] dir</code>, or forward them to your SIEM).</li>
+</ul>
+
+<h4>Checklist: changing a hostname, port or IP</h4>
+<ol>
+  <li>DNS: point the new name at the server or load balancer; issue a TLS certificate for it.</li>
+  <li>Reverse proxy / load balancer: <code>server_name</code>, certificate, upstream IPs and ports.</li>
+  <li>API port or interface changed: <code>server.ini [server] host / port</code>, the proxy's upstream, firewall rules.</li>
+  <li>UI on its own address: <code>config.js apiBaseUrl</code> (if the API moved) and <code>server.ini [cors] allowed_origins</code> + <code>[frontend] frontend_url</code> (if the UI moved).</li>
+  <li>Proxy IPs changed: <code>server.ini [security] trusted_proxies</code>.</li>
+  <li>Okta in use: update the redirect URI in Admin Settings and in the Okta app (both must match the public API address).</li>
+  <li>Database moved: <code>database.ini</code> host/port (and the database firewall).</li>
+  <li>Restart the API service(s); check <code>/api/health</code>, sign in, open a document. Users sign in again on a new hostname (cookies are per host); the installed app (PWA) must be reinstalled from the new address.</li>
+</ol>
+
+<h3 id="docker">11.10 Docker / NAS (UGREEN, Synology, any Linux Docker host)</h3>
+<p>Two containers, started with Docker Compose. Files are in <code>build/docker/</code>. The host needs Docker (UGOS, DSM Container Manager or Docker Engine) and no internet: the images are built on a machine with internet and copied over.</p>
+<table>
+<tr><th>Container</th><th>Image</th><th>Role</th><th>Reachable at</th></tr>
+<tr><td><code>docupulse-idp-web</code></td><td><code>docupulse-idp-web</code> (Nginx 1.28, Alpine)</td><td>HTTPS, serves the web UI (<code>frontend/dist</code>), forwards <code>/api/</code>, <code>/docs</code> and <code>/openapi.json</code> to the API, redirects HTTP to HTTPS</td><td>host ports <code>HTTPS_PORT</code> (default 7443) and <code>HTTP_PORT</code> (7080, redirect only)</td></tr>
+<tr><td><code>docupulse-idp-api</code></td><td><code>docupulse-idp-api</code> (Python 3.12 slim, all packages and OCR models inside)</td><td>The FastAPI server with <code>serve_frontend = false</code>; runs as <code>PUID:PGID</code>, not root</td><td>only from <code>web</code>, on the private network <code>docupulse-idp</code> (no host port)</td></tr>
+</table>
+<p><b>Persistent data</b> (next to <code>docker-compose.yml</code>, back up the whole <code>data/</code> folder):</p>
+<ul>
+  <li><code>data/config</code> → <code>/app/backend/config</code>: <code>server.ini</code>, <code>database.ini</code>, <code>auth.ini</code>, created on the first start from the <code>.example.ini</code> files (refreshed on every start). Edit, then <code>docker compose restart api</code>.</li>
+  <li><code>data/storage</code> → <code>/app/backend/storage</code>: documents, page images, the SQLite database, <code>secret.key</code>, logs and, on the first start, <code>initial_admin_password.txt</code>.</li>
+  <li><code>data/certs</code> → <code>/etc/nginx/certs</code>: <code>server.crt</code> (full chain) and <code>server.key</code>. When missing, a self-signed certificate is created for <code>TLS_SUBJECT_ALT_NAMES</code> (browsers warn until it is trusted). To use your own, replace both files and <code>docker compose restart web</code>.</li>
+</ul>
+<p><b>Build the bundle</b> (Mac or Linux with Docker and internet): <code>build/docker/make-bundle.sh</code> (default <code>linux/amd64</code>, for Intel/AMD NAS models; <code>linux/arm64</code> for ARM). Result: <code>../IDP_dist/DocuPulse-IDP-&lt;version&gt;-docker/</code> with <code>docupulse-idp-images.tar.gz</code>, <code>docker-compose.yml</code>, <code>.env.example</code> and <code>INSTALL.txt</code>.</p>
+<p><b>Install on the NAS</b>, in a folder of its own (e.g. <code>/volume1/docker/docupulse-idp</code>):</p>
+<pre>docker load -i docupulse-idp-images.tar.gz
+cp .env.example .env      # PUID/PGID = the folder owner's ids (run: id), ports, TLS_SUBJECT_ALT_NAMES
+docker compose up -d
+cat data/storage/initial_admin_password.txt     # sign in at https://&lt;nas&gt;:7443 as admin, then change it</pre>
+<p>In the UGOS or DSM Docker app: import the image file, then create a project from this folder. <code>pull_policy: never</code> keeps Docker from trying the internet.</p>
+<table>
+<tr><th><code>.env</code> setting</th><th>Default</th><th>Meaning</th></tr>
+<tr><td><code>IDP_VERSION</code></td><td>bundle version</td><td>Image tag to run</td></tr>
+<tr><td><code>HTTPS_PORT</code> / <code>HTTP_PORT</code></td><td>7443 / 7080</td><td>Host ports. Choose ports nothing else on the NAS uses (UGOS itself uses 9999/9443). Open <code>HTTPS_PORT</code> in the NAS firewall for the LAN.</td></tr>
+<tr><td><code>PUID</code> / <code>PGID</code></td><td>1000</td><td>User and group the API writes <code>data/</code> as</td></tr>
+<tr><td><code>TLS_SUBJECT_ALT_NAMES</code></td><td>empty</td><td>Names in the self-signed certificate, e.g. <code>DNS:nas01,IP:192.168.1.50</code> (first start only; delete <code>data/certs/*</code> to redo)</td></tr>
+<tr><td><code>HSTS_HEADER</code></td><td>empty (off)</td><td><code>max-age=31536000</code> once the certificate is trusted by browsers. Never with a self-signed certificate: browsers would then refuse to show the page at all.</td></tr>
+<tr><td><code>MAX_BODY_MB</code></td><td>30</td><td>Largest request Nginx accepts; keep above <code>[storage] max_upload_mb</code></td></tr>
+<tr><td><code>CLOUDFLARE_TUNNEL_TOKEN</code>, <code>CLOUDFLARED_IMAGE</code>, <code>IDP_TUNNEL_IP</code></td><td>empty, <code>cloudflare/cloudflared:latest</code>, 172.30.80.12</td><td>Optional public access, see below. Only used with <code>--profile public</code>.</td></tr>
+<tr><td><code>IDP_SUBNET</code>, <code>IDP_WEB_IP</code>, <code>IDP_API_IP</code></td><td>172.30.80.0/24, .10, .11</td><td>The private container network. <code>IDP_WEB_IP</code> is the API's only trusted proxy (<code>IDP_TRUSTED_PROXIES</code>), so client addresses in the logs and sign-in lockouts are the browsers' real ones. Change only if the subnet clashes with another Docker network.</td></tr>
+</table>
+<p>The API container sets <code>IDP_HOST=0.0.0.0</code>, <code>IDP_SERVE_FRONTEND=false</code> and <code>IDP_TRUSTED_PROXIES</code> through the environment, which wins over <code>server.ini</code>; every other setting is in <code>data/config</code>. Nginx sends the same security headers and caching rules as the API does in single-server mode (strict CSP; <code>index.html</code>, <code>config.js</code>, service-worker files and <code>branding/</code> never cached). To change <code>config.js</code> or the branding without rebuilding, copy them out of the image (<code>docker cp docupulse-idp-web:/usr/share/nginx/html/config.js data/web/</code>, same for <code>branding</code>) and enable the two commented volume lines in <code>docker-compose.yml</code>.</p>
+<h4 id="docker-public">Public access for testing (Cloudflare tunnel)</h4>
+<p>To let people outside the network try it, without opening a port on the router, the compose file has an optional third container, <code>docupulse-idp-tunnel</code> (cloudflared), that keeps an outbound connection to Cloudflare. It is a tunnel of its own, separate from any other on the same NAS. This needs internet and sends traffic through Cloudflare, so it is for testing only; the offline intranet install does not use it.</p>
+<ol>
+  <li>Cloudflare dashboard → Zero Trust → Networks → Tunnels → <b>Create a tunnel</b> (type cloudflared). Copy the token from the install command.</li>
+  <li>On the tunnel, add a <b>public hostname</b> (newer dashboards call it a <b>Published application route</b>; not "Hostname routes", which are private-network only) on a domain in your Cloudflare account (e.g. <code>docupulse.example.com</code>), service <code>HTTPS</code> → <code>web:443</code>, and under TLS turn on <b>No TLS Verify</b> (the container's certificate is self-signed; visitors get Cloudflare's trusted certificate).</li>
+  <li>On the NAS put the token in <code>.env</code> (<code>CLOUDFLARE_TUNNEL_TOKEN=...</code>, file mode 600), then <code>docker compose --profile public up -d</code>. Stop public access with <code>docker compose stop tunnel</code> (or delete the public hostname in Cloudflare).</li>
+</ol>
+<p>Nginx takes the visitor's address from <code>CF-Connecting-IP</code> only when the request comes from the tunnel container (<code>IDP_TUNNEL_IP</code>), so logs and sign-in lockouts see real visitors and nobody on the LAN can fake the header. Before going public: change the admin password (forced at first sign-in), keep <code>[features] demo_presets = false</code>, and create a local account per tester in Admin Settings → Users (each sees only their own documents). Optionally put a Cloudflare Access policy (email one-time code) in front of the hostname so only invited people reach the sign-in page.</p>
+<p><b>Operate</b>: <code>docker compose ps</code> (both show <i>healthy</i>), <code>docker compose logs -f api</code>, <code>docker compose restart</code>. <b>Upgrade</b>: <code>docker load</code> the new bundle, set <code>IDP_VERSION</code>, <code>docker compose up -d</code>; <code>data/</code> is kept and database upgrades run on start. <b>Back up</b>: <code>docker compose stop</code>, copy <code>data/</code>, <code>docker compose start</code> (or the SQLite online backup from section 14 while running).</p>
+
+<!-- ============================================================ -->
+<h2 id="config">12. Configuration reference</h2>
+<p>Three files hold all deployment settings; each is created from its <code>.example</code> on first start. Environment variables override the files (handy for passwords and containers).</p>
+<table>
+<tr><th>File</th><th>Layer</th><th>Holds</th></tr>
+<tr><td><code>frontend/dist/config.js</code> (source: <code>frontend/public/config.js</code>)</td><td>Web UI</td><td><code>apiBaseUrl</code>: address of the API server; empty = same server. <code>brand</code>: product name, tagline and logo file (see Branding below)</td></tr>
+<tr><td><code>backend/config/server.ini</code></td><td>API server</td><td>listen address and port, serving the UI or not, UI address, CORS origins, session cookie, storage, upload limit, review threshold, local LLM</td></tr>
+<tr><td><code>backend/config/auth.ini</code></td><td>Sign-in</td><td>sign-in method (local / ldap / okta / ui), Okta and LDAP settings, optional group roles; secrets via <code>IDP_OKTA_CLIENT_SECRET</code> / <code>IDP_LDAP_BIND_PASSWORD</code> (see 11.8)</td></tr>
+<tr><td><code>backend/config/database.ini</code></td><td>Database</td><td>engine and connection for SQLite, PostgreSQL, SQL Server</td></tr>
+</table>
+<h3>server.ini</h3>
+<table>
+<tr><th>Section · key</th><th>Environment</th><th>Default</th><th>Meaning</th></tr>
+<tr><td><code>[server] host</code> / <code>port</code></td><td><code>IDP_HOST</code> / <code>IDP_PORT</code></td><td>127.0.0.1 / 8000</td><td>Listen address and port (<code>0.0.0.0</code> to accept connections from other machines)</td></tr>
+<tr><td><code>[server] reload</code></td><td><code>IDP_RELOAD</code></td><td>false</td><td>Auto-reload on code changes (development only)</td></tr>
+<tr><td><code>[frontend] serve_frontend</code></td><td><code>IDP_SERVE_FRONTEND</code></td><td>true</td><td>Serve the UI from <code>dist_dir</code> (single-server mode); false when the UI is hosted elsewhere</td></tr>
+<tr><td><code>[frontend] dist_dir</code></td><td><code>IDP_FRONTEND_DIST</code></td><td>../frontend/dist</td><td>Built UI location</td></tr>
+<tr><td><code>[frontend] frontend_url</code></td><td><code>IDP_FRONTEND_URL</code></td><td>empty</td><td>UI address; users return there after Okta sign-in</td></tr>
+<tr><td><code>[cors] allowed_origins</code></td><td><code>IDP_CORS_ORIGINS</code></td><td>empty</td><td>Comma-separated UI origins allowed to call the API with sign-in cookies</td></tr>
+<tr><td><code>[session] hours</code></td><td><code>IDP_SESSION_HOURS</code></td><td>12</td><td>Sign-in session lifetime</td></tr>
+<tr><td><code>[session] cookie_samesite</code></td><td><code>IDP_COOKIE_SAMESITE</code></td><td>lax</td><td><code>lax</code>, <code>strict</code>, or <code>none</code> (unrelated domains; forces Secure)</td></tr>
+<tr><td><code>[session] cookie_secure</code></td><td><code>IDP_COOKIE_SECURE</code></td><td>auto</td><td><code>auto</code> = Secure over HTTPS; <code>true</code> / <code>false</code> to force</td></tr>
+<tr><td><code>[storage] dir</code></td><td><code>IDP_STORAGE_DIR</code></td><td>storage</td><td>Uploads, page images, SQLite database (relative to backend/)</td></tr>
+<tr><td><code>[storage] max_upload_mb</code></td><td><code>IDP_MAX_UPLOAD_MB</code></td><td>25</td><td>Upload size limit</td></tr>
+<tr><td><code>[storage] max_pages</code></td><td><code>IDP_MAX_PAGES</code></td><td>500</td><td>Most pages processed per document (the rest are skipped with a warning)</td></tr>
+<tr><td><code>[logging] dir</code> / <code>level</code> / <code>format</code></td><td><code>IDP_LOG_DIR</code> / <code>IDP_LOG_LEVEL</code> / <code>IDP_LOG_FORMAT</code></td><td>storage/logs / INFO / json</td><td>Where <code>app.log</code> and <code>audit.log</code> go, how much detail, JSON lines or text</td></tr>
+<tr><td><code>[logging] max_mb</code> / <code>backups</code></td><td><code>IDP_LOG_MAX_MB</code> / <code>IDP_LOG_BACKUPS</code></td><td>20 / 10</td><td>Rotation size and number of old files kept, per log</td></tr>
+<tr><td><code>[logging] access_log</code></td><td><code>IDP_LOG_ACCESS</code></td><td>true</td><td>One line per request in <code>app.log</code></td></tr>
+<tr><td><code>[security] trusted_proxies</code></td><td><code>IDP_TRUSTED_PROXIES</code></td><td>127.0.0.1</td><td>Proxies whose <code>X-Forwarded-For/-Proto</code> are believed (client address in logs and lock-outs, HTTPS detection)</td></tr>
+<tr><td><code>[security] login_max_failures</code> / <code>login_lockout_minutes</code> / <code>login_max_failures_per_ip</code></td><td><code>IDP_LOGIN_…</code></td><td>5 / 15 / 30</td><td>Sign-in throttling</td></tr>
+<tr><td><code>[security] password_min_length</code></td><td><code>IDP_PASSWORD_MIN_LENGTH</code></td><td>12</td><td>Minimum length of new local passwords</td></tr>
+<tr><td><code>[security] secret_key</code> / <code>secret_key_file</code></td><td><code>IDP_SECRET_KEY</code> / <code>IDP_SECRET_KEY_FILE</code></td><td>empty / storage/secret.key</td><td>Key that encrypts stored sign-in secrets (Fernet key; generated into the file when empty)</td></tr>
+<tr><td><code>[security] content_security_policy</code></td><td><code>IDP_CSP</code></td><td>built-in</td><td>Override the UI's Content-Security-Policy (rarely needed)</td></tr>
+<tr><td><code>[features] demo_presets</code></td><td><code>IDP_DEMO_PRESETS</code></td><td>false</td><td>Instant demo: the sample-document buttons on the dashboard and in Upload (contract, US passport, invoice), <code>POST /api/v1/documents/sample/{type}</code> (404 when off), and three demo documents added to an empty database. Keep off in production</td></tr>
+<tr><td><code>[extraction] review_threshold</code></td><td><code>IDP_REVIEW_THRESHOLD</code></td><td>0.85</td><td>Overall confidence below this needs review</td></tr>
+<tr><td><code>[local_llm] url</code> / <code>model</code> / <code>timeout</code> / <code>max_chars</code></td><td><code>LOCAL_LLM_URL</code> …</td><td>empty / llama3.1:8b / 60 / 12000</td><td>Optional OpenAI-compatible local LLM; empty disables it</td></tr>
+</table>
+<h3 id="branding">Branding: logo, icons and name</h3>
+<p>The logo, the browser-tab icon, the installed-app icons and the product name can be replaced on the web server <b>without rebuilding</b>. Everything is in <code>frontend/dist/branding/</code> (source: <code>frontend/public/branding/</code>, which also has a <code>README.txt</code>) plus three settings files. The shipped files are placeholders with the DocuPulse shield.</p>
+<table>
+<tr><th>Replace</th><th>File (same name)</th><th>Format and size</th></tr>
+<tr><td>Logo (sidebar, sign-in, password screen)</td><td><code>branding/logo.svg</code></td><td>Square, shown at 38 px. SVG preferred; or a PNG ≥ 256 px — then set <code>brand.logo</code> in <code>config.js</code> to <code>"branding/logo.png"</code>. If the file is missing, the built-in shield in the theme colours is shown</td></tr>
+<tr><td>Browser-tab icon</td><td><code>branding/favicon.svg</code> and <code>branding/favicon.ico</code></td><td>SVG readable at 16 px; .ico with 16, 32, 48 px inside. Rounded or transparent corners look best</td></tr>
+<tr><td>Installed-app icons (desktop, Android, Start menu)</td><td><code>branding/icons/icon-&lt;n&gt;.png</code></td><td>PNG, n = 16, 32, 48, 72, 96, 128, 144, 152, 192, 384, 512; transparent corners allowed</td></tr>
+<tr><td>Android adaptive icons</td><td><code>branding/icons/maskable-192.png</code>, <code>maskable-512.png</code></td><td>Square, background colour to the edges, logo within the middle 80 % (the launcher cuts its own shape)</td></tr>
+<tr><td>iPhone / iPad home screen</td><td><code>branding/icons/apple-touch-icon.png</code></td><td>180 × 180 PNG, no transparency (iOS rounds the corners)</td></tr>
+<tr><td>Product name and tagline</td><td><code>config.js</code> → <code>brand: { name, tagline, logo }</code></td><td>Shown in the sidebar, sign-in page and browser-tab titles ("Dashboard · <i>name</i>")</td></tr>
+<tr><td>Installed-app name and colours</td><td><code>manifest.webmanifest</code></td><td><code>name</code>, <code>short_name</code>, <code>theme_color</code>, <code>background_color</code></td></tr>
+</table>
+<p>Steps: copy the new files over the old ones in <code>frontend/dist/branding/</code> on the server that hosts the UI (also into <code>frontend/public/branding/</code> so the next build keeps them), edit <code>config.js</code> if the name or logo file name changes, then reload the page. No restart is needed: <code>config.js</code>, <code>manifest.webmanifest</code> and everything in <code>branding/</code> are served uncached and are not stored by the offline app. Browsers keep tab icons for a while — press Ctrl+F5 (Cmd+Shift+R) or reopen the tab; installed apps pick up a new icon when the browser next checks the manifest, or after reinstalling.</p>
+<p>One 1024 px PNG is enough to make the set, e.g. with ImageMagick: <code>magick logo-1024.png -resize 512x512 icons/icon-512.png</code> (per size) and <code>magick logo-1024.png -define icon:auto-resize=48,32,16 favicon.ico</code>.</p>
+
+<h3>database.ini and other environment variables</h3>
+<table>
+<tr><th>Variable</th><th>Default</th><th>Meaning</th></tr>
+<tr><td><code>IDP_ADMIN_PASSWORD</code></td><td>(generated)</td><td>Password for the first local admin, used only when it is created</td></tr>
+<tr><td><code>IDP_DB_ENGINE</code></td><td>from database.ini</td><td><code>sqlite</code>, <code>postgresql</code> or <code>sqlserver</code></td></tr>
+<tr><td><code>IDP_DB_HOST</code> <code>IDP_DB_PORT</code> <code>IDP_DB_NAME</code> <code>IDP_DB_USER</code> <code>IDP_DB_PASSWORD</code></td><td>from database.ini</td><td>Database connection (password preferably only here)</td></tr>
+<tr><td><code>IDP_DB_PATH</code></td><td>idp_saas.db</td><td>SQLite file (relative to storage)</td></tr>
+</table>
+<p>Sign-in settings come from <code>auth.ini</code> at every start (11.8); with <code>mode = ui</code> they are edited in the UI and kept in the database.</p>
+
+<!-- ============================================================ -->
+<h2 id="ops">13. Operations &amp; monitoring</h2>
+<ul>
+  <li><b>Health</b>: <code>GET /api/health</code> (no sign-in) returns status, version, OCR engine, database engine, whether a local LLM is configured and whether the server also serves the UI. Use it for load-balancer and uptime checks.</li>
+  <li><b>Logs</b> (in <code>[logging] dir</code>, default <code>backend/storage/logs/</code>, rotated at 20 MB × 10 files):
+    <ul>
+      <li><code>app.log</code> — start-up, one line per request (method, path without query string, status, milliseconds, user, client address), warnings and errors with stack traces. Also printed to the console (journald / <code>docker logs</code>).</li>
+      <li><code>audit.log</code> — always JSON: <code>login</code> (success / failure / blocked / denied, with method and reason), <code>logout</code>, <code>password_change</code>, <code>admin.auth_settings_changed</code> (which sections; never secret values), <code>admin.user_created</code>, <code>admin.user_changed</code>, and <code>api_change</code> for every POST/PUT/PATCH/DELETE (method, path, status, actor).</li>
+      <li>Every line has <code>time</code> (UTC), <code>level</code>, <code>request_id</code>, <code>user</code> and <code>client_ip</code>. The same request id is returned to the browser in <code>X-Request-ID</code> and in error responses ("reference …"), so a user's report leads straight to the log lines. A request id sent by nginx (<code>proxy_set_header X-Request-ID $request_id;</code>) is reused.</li>
+      <li>Never logged: passwords, session tokens, API keys, secrets, query strings, document text or extracted values. A filter masks anything credential-like as a safety net.</li>
+    </ul>
+    Example: <pre>{"time": "2026-10-24T21:55:44.099+00:00", "level": "INFO", "logger": "idp.audit", "message": "login", "request_id": "fcca45b5c5164fb0", "user": "-", "client_ip": "10.1.4.22", "event": "login", "outcome": "failure", "username": "jdoe", "reason": "wrong password", "method": "ldap"}</pre></li>
+  <li><b>What to watch</b>: share of <code>failed</code> documents, the review rate on the dashboard, disk usage of <code>storage/</code>, webhook failures (Admin → Webhooks → delivery logs), sign-in failures and lock-outs (<code>"event": "login"</code> with <code>"outcome": "failure"</code> or <code>"blocked"</code> in <code>audit.log</code>), and <code>ERROR</code> lines in <code>app.log</code>.</li>
+  <li><b>Housekeeping</b>: expired sessions are purged automatically; delete old documents via the document list (multi-select) or the API; rotate API keys periodically.</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2 id="backup">14. Backup &amp; restore</h2>
+<table>
+<tr><th>What</th><th>How</th><th>Frequency</th></tr>
+<tr><td>Database</td><td>SQLite: <code>sqlite3 storage/idp_saas.db ".backup backup.db"</code> (safe while running). SQL Server: full + log backups. PostgreSQL: <code>pg_dump</code>.</td><td>Daily (plus logs for SQL Server)</td></tr>
+<tr><td>File storage</td><td>Copy <code>storage/uploads</code> and <code>storage/doc_*</code> (rsync/robocopy, or snapshot the volume)</td><td>Daily</td></tr>
+<tr><td>Configuration</td><td><code>backend/config/database.ini</code>, service definition, environment file</td><td>On change</td></tr>
+<tr><td>Docker / NAS install</td><td>The whole <code>data/</code> folder next to <code>docker-compose.yml</code> (config, storage, certificates) and <code>.env</code>; stop the containers first or use the SQLite online backup (section 11.10)</td><td>Daily (NAS snapshot or backup task)</td></tr>
+</table>
+<p><b>Restore</b>: stop the service, restore the database and the storage folder from the same point in time, start the service. The database and the files must match: a document row points to its file path and page images.</p>
+
+<!-- ============================================================ -->
+<h2 id="upgrade">15. Upgrades</h2>
+<ol>
+  <li>Back up the database and storage (section 14).</li>
+  <li>Stop the service; replace the application files (keep <code>backend/storage</code> — including <code>secret.key</code> — and <code>backend/config/</code>: <code>server.ini</code>, <code>database.ini</code>, <code>auth.ini</code>). New settings sections are optional; compare with the <code>.example</code> files.</li>
+  <li>Install new packages offline (<code>pip install --no-index --find-links wheels -r backend/requirements.txt</code>). <b>Upgrading from 1.3 or earlier:</b> 1.4 needs Python 3.11+ (3.12 recommended): recreate <code>venv</code> with the new Python before installing (the install script does this when <code>venv</code> is removed).</li>
+  <li>With several API servers, start one first, wait for <code>/api/health</code>, then the others.</li>
+  <li>Docker / NAS: <code>docker load -i docupulse-idp-images.tar.gz</code> from the new bundle, set <code>IDP_VERSION</code> in <code>.env</code>, <code>docker compose up -d</code> (section 11.10). Steps 2 and 3 do not apply.</li>
+  <li>Start the service. A release that changes the database includes the upgrade; it is applied once on start and recorded in <code>schema_version</code>.</li>
+</ol>
+
+<!-- ============================================================ -->
+<h2 id="trouble">16. Troubleshooting</h2>
+<table>
+<tr><th>Symptom</th><th>Likely cause and fix</th></tr>
+<tr><td>Page at :8000 does not load</td><td>Service not running, or bound to 127.0.0.1 while browsing from another machine: set <code>IDP_HOST=0.0.0.0</code> or use the reverse proxy.</td></tr>
+<tr><td>Start-up fails with "needs the psycopg/pymssql driver"</td><td>Install the driver for the chosen engine (section 11).</td></tr>
+<tr><td>Start-up fails connecting to the database</td><td>Check host/port/firewall, the login, and <code>IDP_DB_PASSWORD</code>; SQL Server named instances use <code>host = server\INSTANCE</code>.</td></tr>
+<tr><td>"Directory could not be reached" at sign-in</td><td>Firewall to the DCs, wrong port, or TLS: for LDAPS with an internal CA set the CA file path. Local admins can still sign in.</td></tr>
+<tr><td>Okta sign-in returns to the login page with an error</td><td>Redirect URI mismatch, missing <code>groups</code> claim, or no internet route to Okta. Use <i>Test Okta connection</i>.</td></tr>
+<tr><td>"Not in any group allowed"</td><td>Add the user's AD group in Group roles, or set "People in no mapped group" to User.</td></tr>
+<tr><td>Scanned PDF gives no fields</td><td>Check <code>/api/health</code> shows <code>ocr_engine: rapidocr</code>; very low-resolution scans may need rescanning at ≥ 200 dpi.</td></tr>
+<tr><td>Upload fails with 413</td><td>File above <code>IDP_MAX_UPLOAD_MB</code>, or the proxy's body limit.</td></tr>
+<tr><td>Browser shows an old version after an upgrade</td><td>Reload; the page itself is never cached and assets are versioned.</td></tr>
+<tr><td>A user reports "Something went wrong … reference abc123…"</td><td>Search <code>app.log</code> for <code>"request_id": "abc123…"</code>: the stack trace and the request are there.</td></tr>
+<tr><td>"Too many failed attempts"</td><td>Sign-in lock-out (<code>[security]</code>); it lifts after <code>login_lockout_minutes</code>, or restart the service to clear it. <code>audit.log</code> shows the failures and the client address.</td></tr>
+<tr><td>"Cross-site request refused" (403)</td><td>The UI is served from an address not listed in <code>[cors] allowed_origins</code>, or a proxy rewrites <code>Host</code>: keep <code>proxy_set_header Host $host;</code> in nginx.</td></tr>
+<tr><td>"The file's contents do not match its extension"</td><td>The file is not really a PDF/image of that type (e.g. renamed); save it again as PDF.</td></tr>
+<tr><td>Okta/directory sign-in stopped working after restoring a backup</td><td>The stored secrets are encrypted with <code>storage/secret.key</code>; restore that file too, or re-enter the Okta client secret and bind password.</td></tr>
+<tr><td>Every page says "Change your temporary password first"</td><td>The account has a temporary password; sign out and in again to get the change-password screen, or change it from the user menu.</td></tr>
+<tr><td>Changing the sign-in method in Admin Settings gives "set in config/auth.ini"</td><td>Intended: <code>auth.ini</code> controls it. Edit the file and restart, or set <code>mode = ui</code> to manage it in the app.</td></tr>
+<tr><td>Lost the first-run password file</td><td>Run <code>reset_admin.py</code> on the server (below), or delete the admin account's row only on a brand-new install and restart.</td></tr>
+<tr><td>Locked out / forgot the admin password</td><td>On the server: <code>cd backend &amp;&amp; ../venv/bin/python reset_admin.py</code> sets a new password for the local admin, re-enables it and signs out its sessions.</td></tr>
+</table>
+
+<!-- ============================================================ -->
+<h2 id="limits">17. Known limitations</h2>
+<div class="note warn">Tested in development on macOS with SQLite. The Mac/Linux scripts were run with macOS bash and the Windows PowerShell scripts with PowerShell 7 on macOS; neither has yet run on an actual Linux or Windows server. <b>PostgreSQL, SQL Server, Okta and AD/LDAP have not yet been tested against real servers</b> (LDAP was tested against a simulated directory). Validate each in a test environment before go-live.</div>
+<ul>
+  <li>Several API servers can run behind a load balancer (11.9) with one shared database and storage folder; documents are processed inside the API server that received them. Sign-in lock-out counters are kept per server.</li>
+  <li>OCR quality depends on scan quality; handwriting is not supported. The bundled OCR model is tuned for Latin and Chinese scripts.</li>
+  <li>Numeric dates such as <code>05/10/2026</code> are read month-first (US).</li>
+  <li>Word/Excel uploads (.docx, .xlsx) are not accepted; convert to PDF first.</li>
+  <li>Documents and folders belong to their uploader only; there is no sharing between users or team folders yet.</li>
+  <li>Webhook signing secrets are stored as entered (the server needs them to sign); the Okta client secret and LDAP service password are encrypted.</li>
+  <li>Installing the web UI as an app (PWA) needs HTTPS (or localhost).</li>
+</ul>
+
+<!-- ============================================================ -->
+<h2 id="glossary">18. Glossary</h2>
+<table>
+<tr><td><b>IDP</b></td><td>Intelligent document processing: turning documents into structured data</td></tr>
+<tr><td><b>STP</b></td><td>Straight-through processing: documents approved without human changes</td></tr>
+<tr><td><b>HITL</b></td><td>Human in the loop: a person reviews uncertain results</td></tr>
+<tr><td><b>Template</b></td><td>Definition of a document type's fields and how to find them</td></tr>
+<tr><td><b>MRZ</b></td><td>Machine-readable zone at the bottom of a passport (ICAO 9303)</td></tr>
+<tr><td><b>OIDC</b></td><td>OpenID Connect, the sign-in protocol used with Okta</td></tr>
+<tr><td><b>LDAPS</b></td><td>LDAP over TLS, port 636</td></tr>
+</table>
+<p style="color:var(--dim);font-size:.8rem;margin-top:40px">Generated for DocuPulse IDP. This page is served by the application itself and needs no internet access.</p>
+</main>
+</div>
+
+<script>
+// Live API list from the running server's OpenAPI spec
+fetch('/openapi.json').then(r => r.json()).then(spec => {
+  const box = document.getElementById('eps'); box.innerHTML = '';
+  document.getElementById('ver').textContent = spec.info.version;
+  const esc = s => String(s || '').replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+  for (const [path, ops] of Object.entries(spec.paths)) {
+    for (const [m, op] of Object.entries(ops)) {
+      const params = (op.parameters || []).map(p => `${p.name} (${p.in}${p.required ? ', required' : ''})`).join(', ');
+      const el = document.createElement('details'); el.className = 'ep';
+      el.innerHTML = `<summary><span class="m ${m}">${m.toUpperCase()}</span><code>${esc(path)}</code><span class="tag">${esc((op.tags||[]).join(', '))}</span></summary>
+        <div class="d">${esc(op.description || op.summary || '')}${params ? '\n\nParameters: ' + esc(params) : ''}</div>`;
+      box.appendChild(el);
+    }
+  }
+}).catch(() => { document.getElementById('eps').textContent = 'Sign in as an administrator to see the live endpoint list.'; });
+
+// Highlight the section in view
+const links = [...document.querySelectorAll('#toc a')];
+const io = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting) links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id));
+}), { rootMargin: '-40% 0px -55% 0px' });
+document.querySelectorAll('h2[id]').forEach(h => io.observe(h));
+</script>
+</body>
+</html>

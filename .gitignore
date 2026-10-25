@@ -1,0 +1,55 @@
+# Python environments and caches
+venv*/
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Web UI: dependencies and build output (rebuild with: cd frontend && npm ci && npm run build)
+frontend/node_modules/
+frontend/dist/
+frontend/.angular/
+
+# Runtime data: documents, page images, databases, backups, logs, keys, first-run password
+backend/storage/
+*.db
+*.db-journal
+*.sqlite*
+*.bak
+*.log
+logs/
+secret.key
+initial_admin_password.txt
+
+# Live configuration (each server creates its own from the .example files)
+backend/config/server.ini
+backend/config/database.ini
+backend/config/auth.ini
+.env
+.env.*
+!.env.example
+
+# Generated sample documents (made at start when the demo flag is on)
+backend/sample_docs/*.pdf
+
+# Certificates and private keys
+*.pem
+*.key
+*.crt
+*.pfx
+*.p12
+
+# Packaging output
+build/wheels/
+IDP_dist/
+dist-bundle/
+*.zip
+*.tgz
+*.tar.gz
+
+# OS / editor / tool files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+.claude/
