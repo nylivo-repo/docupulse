@@ -1,6 +1,6 @@
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit, computed, signal } from '@angular/core';
 import { Check, Copy, ExternalLink } from 'lucide';
-import { apiUrl, copyText, serverOrigin } from '../core/api';
+import { api, apiUrl, copyText, serverOrigin } from '../core/api';
 import { Icon } from '../core/icon';
 
 const buildSnippets = (base: string) => ({
@@ -51,6 +51,19 @@ print("MRZ Checksum:", result["fields"]["mrz_checksum_valid"]["value"])`,
     "actor": "Lead Legal Counsel"
   }'`,
   },
+  lookup_curl: {
+    title: 'Look Up Documents via a Template Endpoint (cURL)',
+    lang: 'bash',
+    code: `# A template with its API switched on publishes /api/v1/lookup/<endpoint> (Templates → Edit → API)
+curl -G "${base}/api/v1/lookup/getPassportDetails" \\
+  -H "X-API-Key: dp_live_YOUR_API_KEY" \\
+  --data-urlencode "lastName=Doe" --data-urlencode "firstName=Jane"
+
+# Sensitive search keys (e.g. SSN) go in a POST body, never in the URL
+curl -X POST "${base}/api/v1/lookup/getPassportDetails" \\
+  -H "Content-Type: application/json" -H "X-API-Key: dp_live_YOUR_API_KEY" \\
+  -d '{"ssn": "123-45-6789"}'`,
+  },
   schema_create: {
     title: 'Create Custom Schema Dynamically (cURL)',
     lang: 'bash',
@@ -88,6 +101,10 @@ const ENDPOINTS = [
     text: 'Move documents into a folder, or to the top level' },
   { method: 'GET', badge: 'badge-queued', path: '/api/v1/documents/{id}/export/xlsx', scope: 'doc:read',
     text: 'Download fields and tables as Excel (also /export/csv and /export/json)' },
+  { method: 'GET', badge: 'badge-queued', path: '/api/v1/lookup', scope: 'doc:read',
+    text: 'List the lookup endpoints templates publish, with search keys and returned fields' },
+  { method: 'GET', badge: 'badge-queued', path: '/api/v1/lookup/{endpoint}', scope: 'lookup:{endpoint}',
+    text: 'Find approved documents by documentId or search keys; returns their fields (POST: keys in a JSON body)' },
   { method: 'POST', badge: 'badge-approved', path: '/api/v1/schemas', scope: 'schema:manage',
     text: 'Dynamically register new custom document schema and extraction rules' },
 ];
@@ -114,6 +131,17 @@ const ENDPOINTS = [
     .post { background: color-mix(in srgb, var(--success) 20%, transparent); }
     .path { font-family: var(--font-mono); color: var(--accent-text); overflow-wrap: anywhere; }
     .cell-label { display: none; }
+    .lookup-list { display: flex; flex-direction: column; }
+    .lookup { padding: 16px 20px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+    .lookup + .lookup { border-top: 1px solid var(--border-color); }
+    .lookup-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .lookup-head h4 { font-size: 0.92rem; font-weight: 700; }
+    .lookup-head .muted { font-size: 0.78rem; color: var(--text-muted); font-weight: 400; }
+    .params { display: flex; gap: 6px; flex-wrap: wrap; font-size: 0.75rem; }
+    .params .type-pill { font-family: var(--font-mono); }
+    .sens { color: var(--warning-text); }
+    .empty { padding: 16px 20px; color: var(--text-secondary); font-size: 0.85rem; }
+    .lookup .code-box { padding: 12px; font-size: 0.78rem; }
 
     @media (max-width: 640px) {
       .banner { flex-direction: column; align-items: stretch; padding: 16px; }
@@ -167,6 +195,40 @@ const ENDPOINTS = [
       </div>
     </div>
 
+    <!-- Lookup endpoints published by templates -->
+    <div class="glass-card flush">
+      <div class="section-head"><h3>Template Lookup Endpoints</h3></div>
+      @if (!lookups().length) {
+        <p class="empty">No template publishes a lookup endpoint yet. Open Templates, edit a template and switch on its API section.</p>
+      }
+      <div class="lookup-list">
+        @for (l of lookups(); track l.endpoint) {
+          <div class="lookup">
+            <div class="lookup-head">
+              <h4>{{ l.endpoint }} <span class="muted">· {{ l.template }} · scope <code>{{ l.scope }}</code></span></h4>
+              <button class="btn btn-secondary btn-sm" (click)="copyLookup(l)">
+                <app-icon [icon]="copiedLookup() === l.endpoint ? Check : Copy" [size]="14" />
+                <span>{{ copiedLookup() === l.endpoint ? 'Copied!' : 'Copy Example' }}</span>
+              </button>
+            </div>
+            <div class="params">
+              <span>Search keys:</span>
+              @for (k of l.search_keys; track k.param) {
+                <span class="type-pill" [class.sens]="k.sensitive" [title]="k.sensitive ? 'Sensitive: send in a POST body' : k.label">{{ k.param }}{{ k.sensitive ? ' (POST only)' : '' }}</span>
+              }
+            </div>
+            <div class="params">
+              <span>Returns:</span>
+              @for (f of l.fields; track f.name) {
+                <span class="type-pill" [class.sens]="f.sensitive" [title]="f.sensitive ? 'Masked unless the key has pii:read' : f.label">{{ f.name }}</span>
+              }
+            </div>
+            <pre class="code-box"><code>{{ lookupExample(l) }}</code></pre>
+          </div>
+        }
+      </div>
+    </div>
+
     <!-- REST API Endpoints Quick Reference Table -->
     <div class="glass-card flush">
       <div class="section-head"><h3>Core API Endpoints Overview</h3></div>
@@ -195,7 +257,7 @@ const ENDPOINTS = [
     </div>
   `,
 })
-export class ApiConsole {
+export class ApiConsole implements OnInit {
   protected readonly Check = Check; protected readonly Copy = Copy; protected readonly ExternalLink = ExternalLink;
 
   protected readonly docsUrl = apiUrl('/docs');
@@ -205,6 +267,41 @@ export class ApiConsole {
   protected readonly selectedSnippet = signal('upload_curl');
   protected readonly copied = signal(false);
   protected readonly activeSnippet = computed(() => this.snippets[this.selectedSnippet()]);
+  protected readonly lookups = signal<any[]>([]);
+  protected readonly copiedLookup = signal<string | null>(null);
+
+  async ngOnInit() {
+    try {
+      this.lookups.set(await api.getLookupEndpoints());
+    } catch {
+      this.lookups.set([]);
+    }
+  }
+
+  // A ready-to-run request for one endpoint, and the shape of its answer
+  lookupExample(l: any) {
+    const base = serverOrigin();
+    const plain = l.search_keys.filter((k: any) => k.param !== 'documentId' && !k.sensitive).slice(0, 2);
+    const sensitive = l.search_keys.find((k: any) => k.sensitive);
+    const query = plain.length ? plain.map((k: any) => ` \\\n  --data-urlencode "${k.param}=…"`).join('')
+      : ` \\\n  --data-urlencode "documentId=doc_…"`;
+    let code = `curl -G "${base}${l.path}" \\\n  -H "X-API-Key: dp_live_YOUR_API_KEY"${query}`;
+    if (sensitive) {
+      code += `\n\n# ${sensitive.param} is sensitive: send it in a POST body\ncurl -X POST "${base}${l.path}" \\\n` +
+        `  -H "Content-Type: application/json" -H "X-API-Key: dp_live_YOUR_API_KEY" \\\n  -d '{"${sensitive.param}": "…"}'`;
+    }
+    const fields = l.fields.map((f: any) => `        "${f.name}": ${f.sensitive ? '"*****1234"' : '"…"'}`).join(',\n');
+    code += `\n\n# Response\n{\n  "endpoint": "${l.endpoint}", "template": "${l.template}",\n  "total": 1, "limit": 20, "offset": 0,\n` +
+      `  "results": [\n    {\n      "documentId": "doc_…", "title": "…", "status": "approved",\n      "fields": {\n${fields}\n      },\n` +
+      `      "maskedFields": [${l.fields.filter((f: any) => f.sensitive).map((f: any) => `"${f.name}"`).join(', ')}]\n    }\n  ]\n}`;
+    return code;
+  }
+
+  copyLookup(l: any) {
+    copyText(this.lookupExample(l));
+    this.copiedLookup.set(l.endpoint);
+    setTimeout(() => this.copiedLookup.set(null), 2500);
+  }
 
   copyCode(text: string) {
     copyText(text);

@@ -55,7 +55,18 @@ def verify_api_key(
     set_request_user(f'{owner["username"]} (API key {row["name"]})')
     role_scopes = ROLE_SCOPES.get(owner["role"], [])
     return {"user_id": owner["id"], "username": owner["username"], "role": owner["role"],
-            "scopes": [s for s in json.loads(row["scopes_json"]) if s in role_scopes], "key_id": row["id"]}
+            "scopes": [s for s in json.loads(row["scopes_json"]) if _key_scope_allowed(s, role_scopes)],
+            "key_id": row["id"], "key_name": row["name"]}
+
+
+def _key_scope_allowed(scope: str, role_scopes: list) -> bool:
+    """
+    A key keeps only scopes its owner's role has. Lookup scopes (lookup:<endpoint>, lookup:*) and pii:read
+    (unmasked sensitive fields) only narrow reading the owner's own documents, so they need doc:read.
+    """
+    if scope in role_scopes:
+        return True
+    return (scope.startswith("lookup:") or scope == "pii:read") and "doc:read" in role_scopes
 
 
 def check_scope(required_scope: str):

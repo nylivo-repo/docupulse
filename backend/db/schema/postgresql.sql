@@ -46,7 +46,9 @@ CREATE TABLE IF NOT EXISTS custom_schemas (
     updated_at VARCHAR(40) NOT NULL,
     is_active INTEGER DEFAULT 1,
     base_pipeline VARCHAR(32),
-    fingerprint TEXT
+    fingerprint TEXT,
+    api_endpoint VARCHAR(64),  -- lookup endpoint name (GET /api/v1/lookup/<name>), unique among active templates
+    api_enabled INTEGER DEFAULT 0
 );
 
 CREATE TABLE IF NOT EXISTS api_keys (

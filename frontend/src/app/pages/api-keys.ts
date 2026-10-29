@@ -10,6 +10,8 @@ const SCOPES = [
   { id: 'doc:write', label: 'doc:write (Upload & review documents)' },
   { id: 'schema:manage', label: 'schema:manage (Configure custom schemas)' },
   { id: 'admin', label: 'admin (Manage keys & webhooks)' },
+  { id: 'lookup:*', label: 'lookup:* (Every template lookup endpoint)' },
+  { id: 'pii:read', label: 'pii:read (Unmasked sensitive fields in lookups)' },
 ];
 
 @Component({
@@ -98,7 +100,8 @@ const SCOPES = [
     <div class="glass-card banner">
       <div>
         <h2>Programmatic API Access &amp; Tokens</h2>
-        <p>Generate scoped API keys for server-to-server automated document ingestion and webhook integration.</p>
+        <p>Generate scoped API keys for server-to-server automated document ingestion and webhook integration.
+          A key acts as the person who creates it and sees only their documents. For a template's lookup endpoint, give the key its <code>lookup:</code> scope.</p>
       </div>
       <button class="btn btn-primary" (click)="isCreating.set(!isCreating())">
         <app-icon [icon]="Plus" [size]="16" />
@@ -125,7 +128,7 @@ const SCOPES = [
         <div class="scopes-box">
           <span class="lbl">Select Permitted Scopes</span>
           <div class="scopes">
-            @for (s of scopeOptions; track s.id) {
+            @for (s of scopeOptions(); track s.id) {
               <label class="scope">
                 <input type="checkbox" [checked]="scopes().includes(s.id)" (change)="toggleScope(s.id, $any($event.target).checked)" />
                 <span>{{ s.label }}</span>
@@ -218,7 +221,12 @@ export class ApiKeys {
   protected readonly Key = Key; protected readonly Trash2 = Trash2; protected readonly Terminal = Terminal;
 
   protected readonly store = inject(Store);
-  protected readonly scopeOptions = SCOPES;
+  // Fixed scopes, then one per lookup endpoint that a template publishes
+  protected readonly scopeOptions = computed(() => [
+    ...SCOPES,
+    ...this.store.schemas().filter((t) => t.api_enabled && t.api_endpoint)
+      .map((t) => ({ id: `lookup:${t.api_endpoint}`, label: `lookup:${t.api_endpoint} (Look up ${t.name} documents)` })),
+  ]);
   protected readonly isCreating = signal(false);
   protected name = '';
   protected quota: number | string = 10000;

@@ -59,7 +59,9 @@ CREATE TABLE dbo.custom_schemas (
     updated_at NVARCHAR(40) NOT NULL,
     is_active INT DEFAULT 1,
     base_pipeline NVARCHAR(32) NULL,
-    fingerprint NVARCHAR(MAX) NULL
+    fingerprint NVARCHAR(MAX) NULL,
+    api_endpoint NVARCHAR(64) NULL,  -- lookup endpoint name (GET /api/v1/lookup/<name>), unique among active templates
+    api_enabled INT DEFAULT 0
 );
 GO
 

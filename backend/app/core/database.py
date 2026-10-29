@@ -22,7 +22,7 @@ _BACKEND_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(_
 CONFIG_DIR = os.path.join(_BACKEND_DIR, "config")
 log = logging.getLogger("idp.db")
 SCHEMA_DIR = os.path.join(_BACKEND_DIR, "db", "schema")
-SCHEMA_VERSION = 4  # db/schema/upgrades/<engine>_00N_*.sql bring older databases up to this
+SCHEMA_VERSION = 5  # db/schema/upgrades/<engine>_00N_*.sql bring older databases up to this
 ENGINES = ("sqlite", "postgresql", "sqlserver")
 
 

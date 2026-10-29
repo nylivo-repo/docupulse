@@ -29,6 +29,13 @@ human review screen, templates, exports and webhooks.
   recognised by the sample's header (letterhead/title), so another vendor's invoice is not mixed up.
 - Documents uploaded with Auto-detect use the matching template automatically. Use
   *Re-run* in Review to re-extract an older document with a new template.
+- *Templates > Edit > API*: publish a lookup endpoint for the template (e.g. `getPassportDetails`),
+  tick the fields other applications may search on, and mark personal data as sensitive. Callers use
+  an API key with the scope `lookup:<name>`:
+  `GET /api/v1/lookup/getPassportDetails?lastName=Doe&firstName=Jane`, or POST a JSON body for
+  sensitive keys such as an SSN. Only the key creator's approved documents are returned, matches are
+  exact (ignoring case and punctuation), sensitive fields are masked unless the key has `pii:read`,
+  and every lookup is audited. Details: /docs section 6.1.
 
 ### Optional local LLM
 

@@ -1,3 +1,4 @@
+import copy
 import logging
 import os
 from contextlib import asynccontextmanager
@@ -19,6 +20,7 @@ from app.api.v1.webhooks import router as webhooks_router
 from app.api.v1.analytics import router as analytics_router
 from app.api.v1.admin import router as admin_router
 from app.api.v1.folders import router as folders_router
+from app.api.v1.lookup import router as lookup_router, openapi_paths as lookup_openapi_paths
 from app.api.auth_routes import router as auth_router
 from app.core.auth import encrypt_stored_secrets, ensure_bootstrap_admin, find_user, user_for_session, SESSION_COOKIE
 from app.engine.sample_generator import create_all_samples
@@ -49,6 +51,7 @@ user-defined templates, human-in-the-loop review and webhooks. Makes no internet
 * **Any document** (`doc_type=auto` or `generic`): detects the type, applies a matching template, or extracts every labelled value.
 * **Templates**: define the fields to extract (labels, aliases, types, regex, page regions), or save one from a reviewed document.
 * **Contracts, Passports (ICAO 9303 MRZ with all check digits), Invoices (math reconciliation)**: built-in pipelines.
+* **Lookup endpoints**: a template can publish `GET/POST /api/v1/lookup/<name>` (e.g. getPassportDetails) that finds approved documents by `documentId` or the template's search keys and returns their fields. API keys need scope `lookup:<name>` (or `lookup:*`); sensitive fields are masked unless the key has `pii:read`.
 * **Folders**: each user's own folder tree (`/folders`), `folder_id` on upload, `POST /documents/move`.
 * **Errors**: JSON `{"detail", "request_id"}`; every response carries `X-Request-ID`. Browser (cookie) requests that change data must come from an allowed origin; API keys are unaffected.
 * **Optional local LLM**: set `LOCAL_LLM_URL` to an OpenAI-compatible server on your network to fill fields rules miss.
@@ -80,6 +83,7 @@ app.include_router(webhooks_router, prefix=settings.API_V1_STR)
 app.include_router(analytics_router, prefix=settings.API_V1_STR)
 app.include_router(admin_router, prefix=settings.API_V1_STR)
 app.include_router(folders_router, prefix=settings.API_V1_STR)
+app.include_router(lookup_router, prefix=settings.API_V1_STR)
 app.include_router(auth_router)
 
 
@@ -118,7 +122,10 @@ def api_docs(request: Request):
 @app.get("/openapi.json", include_in_schema=False)
 def openapi_spec(request: Request):
     _require_admin_session(request)
-    return JSONResponse(app.openapi())
+    # Lookup endpoints come and go with templates, so their paths are added on every request
+    spec = copy.deepcopy(app.openapi())
+    spec["paths"].update(lookup_openapi_paths())
+    return JSONResponse(spec)
 
 
 async def on_startup():

@@ -14,6 +14,8 @@ from app.engine.pipelines.generic import make_fingerprint
 router = APIRouter(prefix="/schemas", tags=["Templates (Custom Schemas)"])
 
 RESERVED_CODES = {"auto", "generic", "custom", "all"}
+# Lookup endpoint names: a letter, then letters, digits or underscores (getPassportDetails)
+ENDPOINT_RE = re.compile(r"^[A-Za-z][A-Za-z0-9_]{2,63}$")
 
 _LIST_SQL = """
     SELECT s.*, (SELECT COUNT(*) FROM documents d WHERE d.schema_id = s.id OR d.doc_type = s.document_type_code) as doc_count
@@ -34,10 +36,12 @@ def _row_to_schema(r) -> CustomSchemaResponse:
         documents_count=r["doc_count"] or 0,
         base_pipeline=r["base_pipeline"],
         fingerprint=r["fingerprint"],
+        api_enabled=bool(r["api_enabled"]),
+        api_endpoint=r["api_endpoint"],
     )
 
 
-def _validate(payload: CustomSchemaCreate):
+def _validate(payload: CustomSchemaCreate, schema_id: Optional[str] = None):
     if not payload.fields:
         raise HTTPException(status_code=400, detail="A template needs at least one field.")
     names = [f.name for f in payload.fields]
@@ -51,6 +55,33 @@ def _validate(payload: CustomSchemaCreate):
                 raise HTTPException(status_code=400, detail=f"Field '{f.name}': invalid regex ({e}).")
         if f.data_type == "enum" and not f.enum_values:
             raise HTTPException(status_code=400, detail=f"Field '{f.name}': enum fields need allowed values.")
+    _validate_api(payload, schema_id)
+
+
+def _validate_api(payload: CustomSchemaCreate, schema_id: Optional[str]):
+    """
+    The lookup endpoint name must be well-formed and unique (ignoring case) among active templates, and a search
+    key may not take a parameter name the lookup itself uses (documentId, limit, offset).
+    """
+    for f in payload.fields:
+        if f.api_search and f.name.replace("_", "").lower() in ("documentid", "limit", "offset"):
+            raise HTTPException(status_code=400, detail=f"Field '{f.name}' cannot be a search key: documentId, limit and offset "
+                                                        "are reserved lookup parameters. Rename the field (e.g. reference_number).")
+    name = (payload.api_endpoint or "").strip()
+    payload.api_endpoint = name or None
+    if not name:
+        if payload.api_enabled:
+            raise HTTPException(status_code=400, detail="Give the API endpoint a name, e.g. getPassportDetails.")
+        return
+    if not ENDPOINT_RE.match(name):
+        raise HTTPException(status_code=400, detail="API endpoint names start with a letter and use only letters, "
+                                                    "digits and underscores (3 to 64 characters), e.g. getPassportDetails.")
+    conn = get_connection()
+    rows = conn.execute("SELECT id, name, api_endpoint FROM custom_schemas WHERE is_active = 1 AND api_endpoint IS NOT NULL").fetchall()
+    conn.close()
+    for r in rows:
+        if r["id"] != schema_id and r["api_endpoint"].lower() == name.lower():
+            raise HTTPException(status_code=400, detail=f"The API endpoint name '{name}' is already used by the template '{r['name']}'.")
 
 
 def _fields_json(payload: CustomSchemaCreate) -> str:
@@ -76,7 +107,11 @@ def list_schemas(auth: dict = Depends(check_scope("doc:read"))):
 
 @router.post("", response_model=CustomSchemaResponse, status_code=status.HTTP_201_CREATED)
 def create_schema(payload: CustomSchemaCreate, auth: dict = Depends(check_scope("schema:manage"))):
-    """Creates a template: the fields to extract, with labels, aliases, types, regex rules and thresholds."""
+    """
+    Creates a template: the fields to extract, with labels, aliases, types, regex rules and thresholds.
+    Optionally publishes a lookup endpoint: `api_enabled`, `api_endpoint` (e.g. getPassportDetails, unique),
+    and per field `api_search` (a search key) and `sensitive` (masked in lookup results).
+    """
     code = re.sub(r"[^a-z0-9_]+", "_", payload.document_type_code.strip().lower()).strip("_")
     if not code or code in RESERVED_CODES:
         raise HTTPException(status_code=400, detail=f"'{payload.document_type_code}' cannot be used as a document type code.")
@@ -90,9 +125,11 @@ def create_schema(payload: CustomSchemaCreate, auth: dict = Depends(check_scope(
     now_str = datetime.now(timezone.utc).isoformat()
     base = payload.base_pipeline if payload.base_pipeline in BUILTIN_PIPELINES else None
     conn.execute("""
-        INSERT INTO custom_schemas (id, name, document_type_code, description, fields_json, created_at, updated_at, is_active, base_pipeline, fingerprint)
-        VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?, ?)
-    """, (schema_id, payload.name, code, payload.description, _fields_json(payload), now_str, now_str, base, payload.fingerprint))
+        INSERT INTO custom_schemas (id, name, document_type_code, description, fields_json, created_at, updated_at, is_active,
+                                    base_pipeline, fingerprint, api_endpoint, api_enabled)
+        VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?, ?, ?, ?)
+    """, (schema_id, payload.name, code, payload.description, _fields_json(payload), now_str, now_str, base, payload.fingerprint,
+          payload.api_endpoint, 1 if payload.api_enabled else 0))
     conn.commit()
     row = conn.execute(_LIST_SQL + " WHERE s.id = ?", (schema_id,)).fetchone()
     conn.close()
@@ -101,14 +138,19 @@ def create_schema(payload: CustomSchemaCreate, auth: dict = Depends(check_scope(
 
 @router.put("/{schema_id}", response_model=CustomSchemaResponse)
 def update_schema(schema_id: str, payload: CustomSchemaCreate, auth: dict = Depends(check_scope("schema:manage"))):
-    """Replaces a template's name, description and fields. The document type code stays the same."""
-    _validate(payload)
+    """
+    Replaces a template's name, description, fields and lookup API settings (`api_enabled`, `api_endpoint`,
+    and per field `api_search` / `sensitive`). The document type code stays the same.
+    """
+    _validate(payload, schema_id)
     conn = get_connection()
     if not conn.execute("SELECT 1 FROM custom_schemas WHERE id = ? AND is_active = 1", (schema_id,)).fetchone():
         conn.close()
         raise HTTPException(status_code=404, detail="Template not found")
-    conn.execute("UPDATE custom_schemas SET name = ?, description = ?, fields_json = ?, updated_at = ? WHERE id = ?",
-                 (payload.name, payload.description, _fields_json(payload), datetime.now(timezone.utc).isoformat(), schema_id))
+    conn.execute("UPDATE custom_schemas SET name = ?, description = ?, fields_json = ?, updated_at = ?, api_endpoint = ?, api_enabled = ? "
+                 "WHERE id = ?",
+                 (payload.name, payload.description, _fields_json(payload), datetime.now(timezone.utc).isoformat(),
+                  payload.api_endpoint, 1 if payload.api_enabled else 0, schema_id))
     conn.commit()
     row = conn.execute(_LIST_SQL + " WHERE s.id = ?", (schema_id,)).fetchone()
     conn.close()

@@ -88,6 +88,7 @@ svg .er-c { fill: #cfd6ea; font-size: 11.5px; font-family: var(--mono); }
   <a href="#lld">4. Low-level design</a>
   <a href="#pipeline">5. Extraction pipeline</a>
   <a href="#templates">6. Templates &amp; review</a>
+  <a href="#lookup">&nbsp;&nbsp;6.1 Lookup API</a>
   <a href="#security">7. Security, sign-in &amp; roles</a>
   <a href="#db">8. Database design</a>
   <a href="#api">9. API reference</a>
@@ -417,6 +418,31 @@ frontend/src/app/
 <tr><td><code>base_pipeline</code> (template)</td><td>Run contracts/identity/invoices rules first, then the template's extra fields</td></tr>
 <tr><td><code>fingerprint</code> (template)</td><td>Letterhead text of the sample, used to recognise similar documents</td></tr>
 </table>
+<h3 id="lookup">6.1 Lookup API (a template's own endpoint)</h3>
+<p>In Templates → <i>Edit</i> (pencil) → <b>API</b>, an administrator can publish a lookup endpoint for the template. Other applications then find documents of that template and read their fields as JSON, without knowing DocuPulse's document model.</p>
+<ul>
+  <li><b>Endpoint name</b>: suggested from the template name (<i>US Passport Details</i> → <code>getUsPassportDetails</code>) until you type your own. It starts with a letter, uses letters, digits and <code>_</code> (3–64 characters) and is unique across active templates, ignoring case. Stored in <code>custom_schemas.api_endpoint</code> / <code>api_enabled</code>.</li>
+  <li><b>Search keys</b>: tick <i>Search</i> on each field that may be looked up (stored as <code>api_search</code> on the field). The query parameter is the field name in camelCase (<code>last_name</code> → <code>lastName</code>; the field name itself also works). Lookup by <code>documentId</code> is always available. A field whose parameter would be <code>documentId</code>, <code>limit</code> or <code>offset</code> (e.g. a field named <code>document_id</code>) cannot be a search key; rename it (e.g. <code>reference_number</code>).</li>
+  <li><b>Sensitive</b>: tick for personal data such as an SSN or date of birth (suggested automatically for names like ssn, tax, birth, passport_no, account). See the rules below.</li>
+  <li>Calls: <code>GET /api/v1/lookup/&lt;name&gt;?lastName=Doe&amp;firstName=Jane</code> or <code>POST /api/v1/lookup/&lt;name&gt;</code> with <code>{"ssn": "123-45-6789"}</code>. <code>GET /api/v1/lookup</code> lists the published endpoints. Each one is also listed with its parameters in the API reference (section 9) and in the API Developer Portal, with a copyable example.</li>
+</ul>
+<table>
+<tr><th>Rule</th><th>Behaviour</th></tr>
+<tr><td>Authentication</td><td>An API key with the scope <code>lookup:&lt;name&gt;</code> (one endpoint) or <code>lookup:*</code> (all). Without it: 403. A signed-in browser session needs <code>doc:read</code>. The scopes are offered on the API Keys page for every published endpoint</td></tr>
+<tr><td>Which documents</td><td>Only the key creator's own documents (a key acts as the person who made it, like every other endpoint), read with this template (<code>schema_id</code> or type code). To serve a shared register, create the key under the account that uploads those documents (for example a service account)</td></tr>
+<tr><td>Status</td><td>Only <b>approved</b> documents are returned. Documents waiting for review, rejected or failed are invisible, even by <code>documentId</code></td></tr>
+<tr><td>Matching</td><td>Exact, ignoring case, spaces and punctuation (<code>123-45-6789</code> = <code>123456789</code>, <code>o'brien</code> = <code>OBrien</code>). No partial or wildcard matches, so the API cannot be used to browse personal data. Several keys must all match. At least one of <code>documentId</code> or a search key is required; unknown parameters are refused (400)</td></tr>
+<tr><td>Pagination</td><td><code>limit</code> 1–100 (default 20) and <code>offset</code>; the answer carries <code>total</code>. Newest documents first</td></tr>
+<tr><td>Sensitive fields</td><td>Returned masked (<code>*****6789</code>, last four characters only when the value is longer than six) and listed in <code>maskedFields</code>, unless the key also has the scope <code>pii:read</code>. A sensitive search key is accepted only in a POST body, never in a URL (URLs end up in proxy logs and browser history); a GET with one is refused (400)</td></tr>
+<tr><td>Audit</td><td>Every call, including refused ones (<code>denied</code>, <code>invalid</code>, <code>not_found</code>), is a <code>lookup.query</code> line in <code>audit.log</code> with the user, key id, endpoint, the <i>names</i> of the parameters used, the number of matches and the returned document ids. Searched values are never logged (the access log never records query strings either). Each returned document also gets an <i>API lookup</i> entry in its own audit trail (Review → Audit) naming the key</td></tr>
+<tr><td>Quota</td><td>Each lookup counts one unit against the key's quota</td></tr>
+</table>
+<pre># Response
+{"endpoint": "getPassportDetails", "template": "US Passport", "total": 1, "limit": 20, "offset": 0,
+ "results": [{"documentId": "doc_…", "title": "…", "status": "approved", "createdAt": "…", "processedAt": "…",
+              "fields": {"first_name": "Jane", "last_name": "Doe", "ssn": "*****6789"}, "maskedFields": ["ssn"]}]}</pre>
+<p>Switching the API off, or deleting the template, removes the endpoint at once (404). Renaming it changes the URL, so callers and key scopes must follow.</p>
+
 <h3>Document Hub folders</h3>
 <ul>
   <li>Works like Finder: <b>New Folder</b> creates one in the folder you are in (folders can nest), and a path bar (All Documents › Invoices › 2026) leads back up. The open folder is part of the address (<code>/documents?folder=…</code>), so Back/Forward and bookmarks work.</li>
@@ -462,7 +488,8 @@ frontend/src/app/
 <tr><td>Sessions</td><td>Random 256-bit token in an <code>HttpOnly</code>, <code>SameSite=Lax</code> cookie (<code>Secure</code> over HTTPS); only its SHA-256 is stored; 12-hour lifetime; disabling a user ends their sessions; a password change or reset ends the person's other sessions</td></tr>
 <tr><td>Cross-site requests</td><td>Besides <code>SameSite</code>, every state-changing request authenticated by the cookie must carry an <code>Origin</code>/<code>Referer</code> of this server or of an allowed UI (<code>[cors]</code>); others get 403. API-key requests are not affected</td></tr>
 <tr><td>Browser hardening</td><td>Pages: strict <code>Content-Security-Policy</code> (scripts only from this server, no inline script, no framing), <code>X-Content-Type-Options: nosniff</code>, <code>X-Frame-Options: DENY</code>, <code>Referrer-Policy: same-origin</code>, <code>Permissions-Policy</code>, <code>Cross-Origin-Opener-Policy</code>; <code>Strict-Transport-Security</code> over HTTPS. API responses: <code>Cache-Control: no-store</code> (personal data is never cached). No <code>Server</code> header</td></tr>
-<tr><td>API keys</td><td>Stored as SHA-256; act as their creator; scopes can only narrow the creator's role; quota per key</td></tr>
+<tr><td>API keys</td><td>Stored as SHA-256; act as their creator; scopes can only narrow the creator's role; quota per key. <code>lookup:&lt;name&gt;</code>, <code>lookup:*</code> and <code>pii:read</code> need the creator to have <code>doc:read</code></td></tr>
+<tr><td>Lookup endpoints</td><td>Own approved documents only, exact matches only, sensitive fields masked without <code>pii:read</code>, sensitive search values only in POST bodies, every call audited without the searched values (6.1)</td></tr>
 <tr><td>Okta</td><td>Authorization code with PKCE and state; claims read from the userinfo endpoint over TLS; client secret never returned by the API</td></tr>
 <tr><td>Stored secrets</td><td>The Okta client secret and the directory bind password are encrypted in the database (Fernet: AES-128-CBC + HMAC-SHA256) with a key from <code>[security] secret_key</code> / <code>IDP_SECRET_KEY</code>, or <code>storage/secret.key</code> (created on first start, owner-only). Secrets saved before 1.4 are encrypted on the next start</td></tr>
 <tr><td>LDAP</td><td>LDAPS or StartTLS with certificate validation; search input escaped (no LDAP injection); empty passwords refused (no anonymous bind); bind password masked</td></tr>
@@ -571,7 +598,7 @@ frontend/src/app/
 <tr><td><code>documents</code></td><td>One row per uploaded document</td><td><code>owner_id</code> (isolation), <code>status</code>, <code>fields_json</code> (extracted fields with value, confidence, box, type, validation error, edit flags), <code>metadata_json</code> (classification, tables, entities, review reasons, OCR info), <code>raw_text</code></td></tr>
 <tr><td><code>folders</code></td><td>Each person's Document Hub folders (a tree)</td><td><code>owner_id</code> (private like documents), <code>parent_id</code> (null = top level), <code>name</code> unique within its folder, <code>favorite_rank</code> (1–3 when pinned as a favourite tab, else null; upgrade 3); <code>documents.folder_id</code> places a document in one (null = top level)</td></tr>
 <tr><td><code>audit_logs</code></td><td>History per document</td><td><code>"user"</code> is the signed-in username; <code>details_json</code> holds old/new values</td></tr>
-<tr><td><code>custom_schemas</code></td><td>Templates incl. the three built-in ones</td><td><code>fields_json</code> (field definitions), <code>base_pipeline</code>, <code>fingerprint</code>; deleted templates are deactivated and their code freed</td></tr>
+<tr><td><code>custom_schemas</code></td><td>Templates incl. the three built-in ones</td><td><code>fields_json</code> (field definitions, incl. <code>api_search</code> / <code>sensitive</code>), <code>base_pipeline</code>, <code>fingerprint</code>, <code>api_endpoint</code> + <code>api_enabled</code> (lookup endpoint, 6.1; schema version 5); deleted templates are deactivated and their code freed</td></tr>
 <tr><td><code>users</code></td><td>Local, Okta and LDAP users</td><td>Unique (<code>username</code>, <code>auth_source</code>); <code>role_locked</code> = set by hand, not by groups</td></tr>
 <tr><td><code>sessions</code></td><td>Browser sign-ins</td><td>Token hash only; expired rows purged at each sign-in</td></tr>
 <tr><td><code>api_keys</code></td><td>Programmatic access</td><td>Hash of the key, owner, scopes, quota</td></tr>
@@ -604,7 +631,13 @@ curl -X POST "http://&lt;server&gt;:8000/api/v1/documents/upload" -H "X-API-Key:
   -F "file=@invoice.pdf" -F "folder_id=fld_…"
 
 # Download the result as Excel
-curl -H "X-API-Key: dp_live_…" -o result.xlsx "http://&lt;server&gt;:8000/api/v1/documents/&lt;doc_id&gt;/export/xlsx"</pre>
+curl -H "X-API-Key: dp_live_…" -o result.xlsx "http://&lt;server&gt;:8000/api/v1/documents/&lt;doc_id&gt;/export/xlsx"
+
+# Look up approved documents through a template's endpoint (6.1); sensitive keys in a POST body
+curl -G "http://&lt;server&gt;:8000/api/v1/lookup/getPassportDetails" -H "X-API-Key: dp_live_…" \
+  --data-urlencode "lastName=Doe" --data-urlencode "firstName=Jane"
+curl -X POST "http://&lt;server&gt;:8000/api/v1/lookup/getPassportDetails" -H "X-API-Key: dp_live_…" \
+  -H "Content-Type: application/json" -d '{"ssn": "123-45-6789"}'</pre>
 <div id="eps">Loading endpoints…</div>
 
 <!-- ============================================================ -->
@@ -1052,7 +1085,8 @@ cat data/storage/initial_admin_password.txt     # sign in at https://&lt;nas&gt;
   <li>OCR quality depends on scan quality; handwriting is not supported. The bundled OCR model is tuned for Latin and Chinese scripts.</li>
   <li>Numeric dates such as <code>05/10/2026</code> are read month-first (US).</li>
   <li>Word/Excel uploads (.docx, .xlsx) are not accepted; convert to PDF first.</li>
-  <li>Documents and folders belong to their uploader only; there is no sharing between users or team folders yet.</li>
+  <li>Documents and folders belong to their uploader only; there is no sharing between users or team folders yet. Lookup endpoints follow the same rule: a key finds only its creator's documents.</li>
+  <li>Lookup endpoints compare values in the API server, over the caller's approved documents of that template; fine for tens of thousands of documents per user, not built for millions. There is no per-key rate limit beyond the quota.</li>
   <li>Webhook signing secrets are stored as entered (the server needs them to sign); the Okta client secret and LDAP service password are encrypted.</li>
   <li>Installing the web UI as an app (PWA) needs HTTPS (or localhost).</li>
 </ul>

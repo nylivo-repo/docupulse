@@ -121,6 +121,10 @@ export const api = {
   // Templates (custom schemas)
   getSchemas: () => get(`${API_BASE}/schemas`),
   createSchema: (schema: unknown) => send(`${API_BASE}/schemas`, 'POST', schema),
+  updateSchema: (id: string, schema: unknown) => send(`${API_BASE}/schemas/${id}`, 'PUT', schema),
+
+  // Lookup endpoints published by templates
+  getLookupEndpoints: () => get(`${API_BASE}/lookup`),
   deleteSchema: (id: string) => send(`${API_BASE}/schemas/${id}`, 'DELETE'),
   createSchemaFromDocument: (docId: string, { name, documentTypeCode, fieldNames, useRegions = true }:
     { name: string; documentTypeCode: string; fieldNames: string[]; useRegions?: boolean }) =>

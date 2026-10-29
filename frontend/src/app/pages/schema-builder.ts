@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { AlertCircle, Check, Plus, Trash2 } from 'lucide';
-import { api } from '../core/api';
+import { AlertCircle, Check, Pencil, Plug, Plus, Trash2 } from 'lucide';
+import { api, serverOrigin } from '../core/api';
 import { Icon } from '../core/icon';
 import { Store } from '../core/store';
 
@@ -13,6 +13,19 @@ const defaultFields = () => [
   { name: 'issue_date', label: 'Issue Date', data_type: 'date', required: true, regex_pattern: '', confidence_threshold: 0.75 },
   { name: 'amount', label: 'Total Value', data_type: 'currency', required: false, regex_pattern: '', confidence_threshold: 0.75 },
 ] as any[];
+
+// Field names that usually hold personal data: suggested as sensitive when picked as a search key
+const SENSITIVE_HINT = /(ssn|social|tax|tin\b|passport_?(no|num)|national|birth|dob|account|card|licen[cs]e)/i;
+// Lookup endpoint names, as the server checks them
+const ENDPOINT_RE = /^[A-Za-z][A-Za-z0-9_]{2,63}$/;
+
+// "US Passport Details" → getUsPassportDetails
+const suggestEndpoint = (name: string) => {
+  const words = name.match(/[A-Za-z0-9]+/g) || [];
+  return words.length ? 'get' + words.map((w) => w[0].toUpperCase() + w.slice(1).toLowerCase()).join('') : '';
+};
+// last_name → lastName, the query parameter name external apps use
+const camel = (name: string) => name.replace(/_([a-z0-9])/g, (_, c) => c.toUpperCase());
 
 @Component({
   selector: 'app-schema-builder',
@@ -48,6 +61,25 @@ const defaultFields = () => [
     .remove { text-align: right; }
     .remove .btn { padding: 6px; color: var(--danger); }
     .actions { display: flex; justify-content: flex-end; gap: 12px; flex-wrap: wrap; }
+    .api-box { border-top: 1px solid var(--border-color); padding-top: 20px; margin-bottom: 20px; display: flex; flex-direction: column; gap: 14px; }
+    .api-box h4 { font-size: 0.95rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+    .api-box .hint { font-size: 0.78rem; color: var(--text-secondary); }
+    .switch { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; width: fit-content; }
+    .switch input { transform: scale(1.2); cursor: pointer; }
+    .ep-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 16px; align-items: start; }
+    .ep-msg { font-size: 0.75rem; margin-top: 4px; color: var(--text-muted); }
+    .ep-msg.bad { color: var(--danger-text); }
+    .ep-url { font-family: var(--font-mono); font-size: 0.75rem; color: var(--accent-text); overflow-wrap: anywhere; padding: 8px 10px;
+      border-radius: var(--radius-sm); background: color-mix(in srgb, var(--tint) 4%, transparent); border: 1px solid var(--border-color); }
+    .keys { border: 1px solid var(--border-color); border-radius: var(--radius-md); overflow: hidden; }
+    .key-row { display: grid; grid-template-columns: minmax(0, 1fr) 110px 110px; gap: 8px; align-items: center; padding: 8px 14px; font-size: 0.82rem; }
+    .key-row + .key-row { border-top: 1px solid var(--border-color); }
+    .key-row.head { font-size: 0.72rem; font-weight: 600; color: var(--text-muted); background: color-mix(in srgb, var(--tint) 3%, transparent); }
+    .key-row label { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+    .key-row .param { font-family: var(--font-mono); font-size: 0.72rem; color: var(--text-muted); margin-left: 6px; }
+    .key-row .fixed { color: var(--text-muted); font-size: 0.75rem; }
+    .api-pill { color: var(--success-text); }
+    .schema-actions { display: flex; gap: 6px; flex-shrink: 0; }
     .schemas { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(380px, 100%), 1fr)); gap: 20px; }
     .schema { padding: 24px; display: flex; flex-direction: column; gap: 16px; min-width: 0; }
     .schema-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
@@ -73,6 +105,8 @@ const defaultFields = () => [
       .req .flbl { margin: 0; }
     }
     @media (max-width: 640px) {
+      .ep-row { grid-template-columns: 1fr; }
+      .key-row { grid-template-columns: minmax(0, 1fr) 84px 84px; padding: 8px 10px; }
       .banner { flex-direction: column; align-items: stretch; padding: 16px; }
       form { padding: 16px; }
       .schema { padding: 16px; }
@@ -97,7 +131,7 @@ const defaultFields = () => [
           Uploads set to Auto-detect pick the matching template. Tip: open any document in Review and click "Save as Template" to build one from it.
         </p>
       </div>
-      <button class="btn btn-primary" (click)="isCreating.set(!isCreating())">
+      <button class="btn btn-primary" (click)="isCreating() ? closeBuilder() : startNew()">
         <app-icon [icon]="Plus" [size]="16" />
         <span>{{ isCreating() ? 'Close Builder' : 'New Custom Schema' }}</span>
       </button>
@@ -106,7 +140,7 @@ const defaultFields = () => [
     <!-- Creation Form -->
     @if (isCreating()) {
       <form ngNativeValidate (ngSubmit)="handleSubmit()" class="glass-card">
-        <h3>Define New Extraction Schema</h3>
+        <h3>{{ editingId() ? 'Edit Template' : 'Define New Extraction Schema' }}</h3>
 
         @if (errorMsg()) {
           <div class="error">
@@ -118,11 +152,13 @@ const defaultFields = () => [
         <div class="form-grid">
           <div>
             <label class="lbl" for="sb-name">Schema Title *</label>
-            <input id="sb-name" name="name" type="text" placeholder="e.g., Logistics Bill of Lading" [(ngModel)]="name" class="field-input" required />
+            <input id="sb-name" name="name" type="text" placeholder="e.g., Logistics Bill of Lading" [(ngModel)]="name"
+              (ngModelChange)="nameChanged()" class="field-input" required />
           </div>
           <div>
             <label class="lbl" for="sb-code">Type Code (API Slug) *</label>
-            <input id="sb-code" name="docTypeCode" type="text" placeholder="e.g., bill_of_lading" [(ngModel)]="docTypeCode" class="field-input" required />
+            <input id="sb-code" name="docTypeCode" type="text" placeholder="e.g., bill_of_lading" [(ngModel)]="docTypeCode" class="field-input"
+              required [disabled]="!!editingId()" [title]="editingId() ? 'The type code of an existing template cannot change' : ''" />
           </div>
         </div>
 
@@ -191,10 +227,60 @@ const defaultFields = () => [
           </div>
         </div>
 
+        <!-- Lookup API: other applications find documents of this template and read their fields -->
+        <div class="api-box">
+          <h4><app-icon [icon]="Plug" [size]="16" /> API</h4>
+          <p class="hint">
+            Publish a lookup endpoint so other applications can find approved documents of this template and read their fields as JSON.
+            Lookup by document ID is always available; tick the fields that can also be searched on.
+          </p>
+          <label class="switch">
+            <input type="checkbox" name="apiEnabled" [checked]="apiEnabled" (change)="toggleApi($any($event.target).checked)" />
+            <span>Publish a lookup endpoint</span>
+          </label>
+          @if (apiEnabled) {
+            <div class="ep-row">
+              <div>
+                <label class="lbl" for="sb-endpoint">Endpoint name *</label>
+                <input id="sb-endpoint" name="apiEndpoint" type="text" class="field-input mono" placeholder="getPassportDetails"
+                  [(ngModel)]="apiEndpoint" (ngModelChange)="endpointTouched = true" autocomplete="off" />
+                <div class="ep-msg" [class.bad]="!!endpointError()">{{ endpointError() || 'Unique across templates; letters, digits and _' }}</div>
+              </div>
+              <div>
+                <span class="lbl">Example call</span>
+                <div class="ep-url">GET {{ exampleUrl() }}</div>
+              </div>
+            </div>
+            <div class="keys" role="table" aria-label="Search keys">
+              <div class="key-row head" role="row"><span>Field</span><span>Search key</span><span>Sensitive</span></div>
+              <div class="key-row" role="row">
+                <span>Document ID <span class="param">documentId</span></span>
+                <span class="fixed">Always</span><span></span>
+              </div>
+              @for (f of fields(); track f; let idx = $index) {
+                <div class="key-row" role="row">
+                  <span>{{ f.label || f.name }} <span class="param">{{ paramName(f) }}</span></span>
+                  @if (reserved(f)) {
+                    <span class="fixed" title="documentId, limit and offset are lookup parameters already; rename the key to search on it">Reserved name</span>
+                  } @else {
+                    <label><input type="checkbox" [checked]="!!f.api_search" (change)="setSearch(f, $any($event.target).checked)" /> Search</label>
+                  }
+                  <label title="Personal data (SSN, date of birth…): masked in results unless the key has pii:read, and searchable only in a POST body">
+                    <input type="checkbox" [checked]="!!f.sensitive" (change)="f.sensitive = $any($event.target).checked" /> Sensitive</label>
+                </div>
+              }
+            </div>
+            <p class="hint">
+              Callers need an API key with the scope <code>lookup:{{ apiEndpoint || '…' }}</code> (API Keys page). A key sees only its creator's
+              approved documents. Sensitive fields come back masked unless the key also has <code>pii:read</code>.
+            </p>
+          }
+        </div>
+
         <div class="actions">
-          <button type="button" class="btn btn-secondary" (click)="isCreating.set(false)">Cancel</button>
+          <button type="button" class="btn btn-secondary" (click)="closeBuilder()">Cancel</button>
           <button type="submit" class="btn btn-primary" [disabled]="saving()">
-            {{ saving() ? 'Registering Schema...' : 'Save & Activate Schema' }}
+            {{ saving() ? 'Saving...' : editingId() ? 'Save Changes' : 'Save & Activate Schema' }}
           </button>
         </div>
       </form>
@@ -207,14 +293,20 @@ const defaultFields = () => [
           <div class="schema-head">
             <div>
               <span class="type-pill code">{{ s.document_type_code }}</span>
+              @if (s.api_enabled && s.api_endpoint) { <span class="type-pill api-pill" title="Lookup endpoint">API: {{ s.api_endpoint }}</span> }
               <h3>{{ s.name }}</h3>
               <p class="schema-desc">{{ s.description || 'No description provided' }}</p>
             </div>
-            @if (!builtIn.includes(s.id)) {
-              <button class="btn btn-secondary btn-sm del" (click)="handleDelete(s.id)" title="Delete Schema" aria-label="Delete Schema">
-                <app-icon [icon]="Trash2" [size]="14" />
+            <div class="schema-actions">
+              <button class="btn btn-secondary btn-sm" (click)="startEdit(s)" title="Edit template" aria-label="Edit template">
+                <app-icon [icon]="Pencil" [size]="14" />
               </button>
-            }
+              @if (!builtIn.includes(s.id)) {
+                <button class="btn btn-secondary btn-sm del" (click)="handleDelete(s.id)" title="Delete Schema" aria-label="Delete Schema">
+                  <app-icon [icon]="Trash2" [size]="14" />
+                </button>
+              }
+            </div>
           </div>
 
           <div class="configured">
@@ -240,6 +332,7 @@ const defaultFields = () => [
 })
 export class SchemaBuilder {
   protected readonly Plus = Plus; protected readonly Trash2 = Trash2;
+  protected readonly Pencil = Pencil; protected readonly Plug = Plug;
   protected readonly Check = Check; protected readonly AlertCircle = AlertCircle;
 
   protected readonly store = inject(Store);
@@ -254,6 +347,96 @@ export class SchemaBuilder {
   protected readonly saving = signal(false);
   protected readonly errorMsg = signal<string | null>(null);
   protected readonly successMsg = signal<string | null>(null);
+  // Template being edited (null: creating a new one)
+  protected readonly editingId = signal<string | null>(null);
+  protected apiEnabled = false;
+  protected apiEndpoint = '';
+  protected endpointTouched = false;
+
+  paramName(f: any) {
+    return camel(String(f.name || '').trim().toLowerCase().replace(/[\s\-]+/g, '_'));
+  }
+
+  // A field whose parameter would clash with the lookup's own (documentId, limit, offset) cannot be a search key
+  reserved(f: any) {
+    return ['documentid', 'limit', 'offset'].includes(this.paramName(f).toLowerCase());
+  }
+
+  // Empty when the name is fine; checked again by the server
+  endpointError() {
+    const name = this.apiEndpoint.trim();
+    if (!name) return 'Give the endpoint a name.';
+    if (!ENDPOINT_RE.test(name)) return 'Start with a letter; letters, digits and _ only (3–64 characters).';
+    const taken = this.store.schemas().find((s) => s.id !== this.editingId() && s.api_endpoint?.toLowerCase() === name.toLowerCase());
+    return taken ? `Already used by "${taken.name}".` : '';
+  }
+
+  exampleUrl() {
+    const keys = this.fields().filter((f) => f.api_search && !f.sensitive).slice(0, 2);
+    const query = keys.length ? keys.map((f) => `${this.paramName(f)}=…`).join('&') : 'documentId=doc_…';
+    return `${serverOrigin()}/api/v1/lookup/${this.apiEndpoint.trim() || '…'}?${query}`;
+  }
+
+  // The endpoint name follows the template name until someone types their own
+  nameChanged() {
+    if (this.endpointTouched) return;
+    let base = suggestEndpoint(this.name), candidate = base, n = 2;
+    const used = new Set(this.store.schemas().filter((s) => s.id !== this.editingId()).map((s) => s.api_endpoint?.toLowerCase()));
+    while (candidate && used.has(candidate.toLowerCase())) candidate = `${base}${n++}`;
+    this.apiEndpoint = candidate;
+  }
+
+  toggleApi(on: boolean) {
+    this.apiEnabled = on;
+    if (on && !this.apiEndpoint) this.nameChanged();
+  }
+
+  setSearch(f: any, on: boolean) {
+    f.api_search = on;
+    if (on && f.sensitive === undefined && SENSITIVE_HINT.test(`${f.name} ${f.label}`)) f.sensitive = true;
+  }
+
+  private resetForm() {
+    this.name = '';
+    this.docTypeCode = '';
+    this.description = '';
+    this.apiEnabled = false;
+    this.apiEndpoint = '';
+    this.endpointTouched = false;
+    this.errorMsg.set(null);
+  }
+
+  startNew() {
+    this.resetForm();
+    this.editingId.set(null);
+    this.fields.set(defaultFields());
+    this.isCreating.set(true);
+  }
+
+  startEdit(s: any) {
+    this.resetForm();
+    this.editingId.set(s.id);
+    this.name = s.name;
+    this.docTypeCode = s.document_type_code;
+    this.description = s.description || '';
+    this.apiEnabled = !!s.api_enabled;
+    this.apiEndpoint = s.api_endpoint || '';
+    this.endpointTouched = !!s.api_endpoint;
+    // Lists are edited as comma-separated text; everything else (regions, locate…) is kept as it is
+    this.fields.set((s.fields || []).map((f: any) => ({
+      ...f,
+      aliases: (f.aliases || []).join(', '),
+      enum_values: (f.enum_values || []).join(', '),
+      regex_pattern: f.regex_pattern || '',
+    })));
+    this.isCreating.set(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  closeBuilder() {
+    this.isCreating.set(false);
+    this.editingId.set(null);
+  }
 
   dateStr(d: string) {
     return new Date(d).toLocaleDateString();
@@ -297,7 +480,12 @@ export class SchemaBuilder {
     this.errorMsg.set(null);
 
     try {
+      if (this.apiEnabled && this.endpointError()) {
+        this.errorMsg.set(`API endpoint: ${this.endpointError()}`);
+        return;
+      }
       const formattedFields = this.fields().map((f) => ({
+        ...f,
         name: f.name.trim().toLowerCase().replace(/[\s\-]+/g, '_'),
         label: f.label.trim(),
         data_type: f.data_type,
@@ -306,22 +494,30 @@ export class SchemaBuilder {
         confidence_threshold: parseFloat(f.confidence_threshold) || 0.75,
         enum_values: f.enum_values ? f.enum_values.split(',').map((x: string) => x.trim()).filter(Boolean) : null,
         aliases: f.aliases ? f.aliases.split(',').map((x: string) => x.trim()).filter(Boolean) : null,
+        api_search: !!f.api_search && !this.reserved(f),
+        sensitive: !!f.sensitive,
       }));
 
       const name = this.name;
-      const newSchema = await api.createSchema({
+      const payload = {
         name,
         document_type_code: this.docTypeCode.trim().toLowerCase().replace(/[\s\-]+/g, '_'),
         description: this.description,
         fields: formattedFields,
-      });
-
-      this.store.schemaCreated(newSchema);
-      this.successMsg.set(`Schema '${name}' created successfully!`);
-      this.isCreating.set(false);
-      this.name = '';
-      this.docTypeCode = '';
-      this.description = '';
+        api_enabled: this.apiEnabled,
+        api_endpoint: this.apiEndpoint.trim() || null,
+      };
+      const id = this.editingId();
+      if (id) {
+        const updated = await api.updateSchema(id, payload);
+        this.store.schemas.update((list) => list.map((x) => (x.id === id ? updated : x)));
+        this.successMsg.set(`Template '${name}' saved.`);
+      } else {
+        this.store.schemaCreated(await api.createSchema(payload));
+        this.successMsg.set(`Schema '${name}' created successfully!`);
+      }
+      this.closeBuilder();
+      this.resetForm();
       setTimeout(() => this.successMsg.set(null), 3500);
     } catch (err: any) {
       this.errorMsg.set(err.message || 'Failed to create schema.');

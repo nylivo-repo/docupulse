@@ -79,6 +79,8 @@ class CustomSchemaFieldDefinition(BaseModel):
     aliases: Optional[List[str]] = None  # other labels the value may appear under
     region: Optional[BoundingBox] = None  # fixed page area, for templates saved from a sample
     locate: Optional[str] = None  # "region": read the region first (fields drawn on the page in Review)
+    api_search: bool = False  # a search key of the template's lookup endpoint (?lastName=…)
+    sensitive: bool = False  # personal data such as an SSN: masked in lookup results unless the key has pii:read
 
 class CustomSchemaCreate(BaseModel):
     name: str
@@ -87,6 +89,8 @@ class CustomSchemaCreate(BaseModel):
     fields: List[CustomSchemaFieldDefinition]
     base_pipeline: Optional[str] = None  # contracts / identity / invoices: run those rules first
     fingerprint: Optional[str] = None  # header text of the sample document, to recognise similar ones
+    api_enabled: bool = False  # publish GET /api/v1/lookup/<api_endpoint>
+    api_endpoint: Optional[str] = Field(None, max_length=64)  # e.g. getPassportDetails, unique among templates
 
 class CustomSchemaResponse(CustomSchemaCreate):
     id: str
