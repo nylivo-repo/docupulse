@@ -1,4 +1,4 @@
-# DocuPulse IDP API. Python 3.11 or 3.12 (3.12 recommended). Pinned versions, checked with
+# IDP API. Python 3.11 or 3.12 (3.12 recommended). Pinned versions, checked with
 # pip-audit on 2026-10-24: no known vulnerabilities. Re-check before each release:
 #   pip install pip-audit && pip-audit -r backend/requirements.txt
 fastapi==0.162.0

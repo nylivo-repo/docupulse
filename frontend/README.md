@@ -1,4 +1,4 @@
-# DocuPulse web UI (Angular 22, PWA)
+# IDP web UI (Angular 22, PWA)
 
 Needs Node.js 22 or 24.
 

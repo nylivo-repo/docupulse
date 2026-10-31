@@ -104,8 +104,9 @@ async def test_webhook_delivery(payload: WebhookTestRequest, auth: dict = Depend
 async def webhook_echo_receiver(request: Request):
     """Built-in receiver for testing webhooks without any outside service: echoes what it received."""
     body = await request.body()
-    return {"received": True, "event": request.headers.get("X-DocuPulse-Event"),
-            "signature": request.headers.get("X-DocuPulse-Signature"), "bytes": len(body)}
+    h = request.headers
+    return {"received": True, "event": h.get("X-IDP-Event") or h.get("X-DocuPulse-Event"),
+            "signature": h.get("X-IDP-Signature") or h.get("X-DocuPulse-Signature"), "bytes": len(body)}
 
 
 @router.get("/logs", response_model=List[WebhookDeliveryLog])

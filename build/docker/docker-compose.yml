@@ -1,4 +1,4 @@
-# DocuPulse IDP on a NAS or any Docker host (Linux x86-64). Two containers:
+# IDP on a NAS or any Docker host (Linux x86-64). Two containers:
 #   web  Nginx: HTTPS, serves the web UI, forwards /api, /docs and /openapi.json to the API
 #   api  the FastAPI server (Python 3.12) with SQLite and documents in data/storage
 # Everything that must survive an upgrade lives in ./data next to this file:

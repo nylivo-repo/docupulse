@@ -1117,4 +1117,6 @@ app-root { display: block; }
   .field-input { min-height: 40px; font-size: 16px; }
 }
 a.nav-item, a.btn { text-decoration: none; }
-.logo-text span { white-space: nowrap; }
+/* A long tagline wraps onto a second line instead of running under the sidebar's edge */
+.logo-text { min-width: 0; }
+.logo-text span { display: block; line-height: 1.35; overflow-wrap: anywhere; }

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>DocuPulse IDP — Technical Documentation</title>
+<title>IDP — Technical Documentation</title>
 <style>
 :root {
   --bg: #0b1020; --panel: #111830; --panel2: #0e1528; --line: #26314f; --text: #e6eaf5; --muted: #93a0bd; --dim: #6b7898;
@@ -78,7 +78,7 @@ svg .er-c { fill: #cfd6ea; font-size: 11.5px; font-family: var(--mono); }
 <body>
 <div class="layout">
 <nav class="toc" id="toc">
-  <div class="brand">DocuPulse IDP</div>
+  <div class="brand">IDP</div>
   <div class="sub">Technical documentation · v<span id="ver">1.1</span></div>
   <div class="grp">Overview</div>
   <a href="#intro">1. Introduction</a>
@@ -107,12 +107,12 @@ svg .er-c { fill: #cfd6ea; font-size: 11.5px; font-family: var(--mono); }
 </nav>
 
 <main>
-<h1>DocuPulse IDP — Technical Documentation</h1>
-<p class="lead">Architecture, design, database, deployment and operations guide for DocuPulse IDP, an intelligent document processing application that runs entirely on your own network: no cloud services and no internet access are needed at run time.</p>
+<h1>IDP — Technical Documentation</h1>
+<p class="lead">Architecture, design, database, deployment and operations guide for IDP, an intelligent document processing application that runs entirely on your own network: no cloud services and no internet access are needed at run time.</p>
 
 <!-- ============================================================ -->
 <h2 id="intro">1. Introduction</h2>
-<p>DocuPulse IDP turns documents (PDFs, scans, photos, text files) into structured data. Users upload a document; the system reads its text (from the PDF text layer or by offline OCR), recognises what kind of document it is, extracts fields and tables, checks them, and routes anything uncertain to a person for review. Reviewers can correct values, add fields by drawing on the page, and save the result as a reusable <b>template</b> so similar documents are extracted the same way next time.</p>
+<p>IDP turns documents (PDFs, scans, photos, text files) into structured data. Users upload a document; the system reads its text (from the PDF text layer or by offline OCR), recognises what kind of document it is, extracts fields and tables, checks them, and routes anything uncertain to a person for review. Reviewers can correct values, add fields by drawing on the page, and save the result as a reusable <b>template</b> so similar documents are extracted the same way next time.</p>
 <div class="cards">
   <div class="card"><b>Fully offline</b><span>Text extraction, OCR, rules and templates run locally. No LLM is required; an optional local LLM on your own network can be enabled.</span></div>
   <div class="card"><b>Any document</b><span>Built-in rules for contracts, passports/IDs and invoices; templates for your own forms; a general extractor for everything else.</span></div>
@@ -134,7 +134,7 @@ svg .er-c { fill: #cfd6ea; font-size: 11.5px; font-family: var(--mono); }
 
 <!-- ============================================================ -->
 <h2 id="architecture">2. Architecture</h2>
-<p>DocuPulse has <b>three layers that can be deployed together or separately</b>:</p>
+<p>IDP has <b>three layers that can be deployed together or separately</b>:</p>
 <ul>
   <li><b>Web UI</b> — a static Angular build (<code>frontend/dist</code>): a responsive, installable web app (PWA) that works on phones, tablets and desktops. It talks to the system only through the REST API, at the address set in <code>config.js</code>. It can be hosted by the API server itself or by any web server (IIS, nginx, Apache).</li>
   <li><b>API server</b> — one Python process (FastAPI on Uvicorn) with the REST API, sign-in and the document-processing engine. Settings in <code>backend/config/server.ini</code>.</li>
@@ -178,7 +178,7 @@ svg .er-c { fill: #cfd6ea; font-size: 11.5px; font-family: var(--mono); }
   <!-- proxy -->
   <rect class="box" x="235" y="110" width="150" height="80" rx="10"/><text x="310" y="140" text-anchor="middle" class="th">Reverse proxy</text><text x="310" y="160" text-anchor="middle" class="t2">TLS :443 (optional)</text><text x="310" y="176" text-anchor="middle" class="t2">nginx / IIS / F5</text>
   <!-- app zone -->
-  <rect class="zone" x="420" y="20" width="400" height="430" rx="14"/><text x="436" y="40" class="zl">DocuPulse application server · :8000</text>
+  <rect class="zone" x="420" y="20" width="400" height="430" rx="14"/><text x="436" y="40" class="zl">IDP application server · :8000</text>
   <rect class="box c" x="440" y="55" width="360" height="62" rx="10"/><text x="620" y="80" text-anchor="middle" class="th">Web UI (static Angular PWA build)</text><text x="620" y="100" text-anchor="middle" class="t2">frontend/dist served by the same process</text>
   <rect class="box c" x="440" y="130" width="360" height="80" rx="10"/><text x="620" y="155" text-anchor="middle" class="th">FastAPI REST API</text><text x="620" y="175" text-anchor="middle" class="t2">/api/auth · /api/v1/documents · schemas · keys</text><text x="620" y="191" text-anchor="middle" class="t2">webhooks · analytics · admin · /docs</text>
   <rect class="box v" x="440" y="222" width="170" height="64" rx="10"/><text x="525" y="248" text-anchor="middle" class="th">Auth &amp; RBAC</text><text x="525" y="268" text-anchor="middle" class="t2">sessions · roles · owner checks</text>
@@ -243,7 +243,7 @@ svg .er-c { fill: #cfd6ea; font-size: 11.5px; font-family: var(--mono); }
 </table>
 
 <h3>3.1 Licences</h3>
-<p>DocuPulse IDP itself is released under the <b>MIT License</b> (<code>LICENSE</code> at the project root). Every component it uses is open source. The full list with versions is in <code>THIRD_PARTY_LICENSES.md</code> at the project root, generated from the installed packages by <code>build/tools/third_party_licenses.py</code> (re-run it after changing dependencies).</p>
+<p>IDP itself is released under the <b>MIT License</b> (<code>LICENSE</code> at the project root). Every component it uses is open source. The full list with versions is in <code>THIRD_PARTY_LICENSES.md</code> at the project root, generated from the installed packages by <code>build/tools/third_party_licenses.py</code> (re-run it after changing dependencies).</p>
 <table>
 <tr><th>Licence</th><th>Components</th></tr>
 <tr><td>MIT / ISC</td><td>FastAPI, Pydantic, pdfplumber, pdfminer.six, ONNX Runtime, Angular, RxJS (Apache-2.0), Lucide (ISC) and most small libraries</td></tr>
@@ -264,7 +264,7 @@ svg .er-c { fill: #cfd6ea; font-size: 11.5px; font-family: var(--mono); }
   windows/    install · start · stop · status  (.bat wrappers around .ps1)
   tools/third_party_licenses.py   regenerates THIRD_PARTY_LICENSES.md
   wheels/                         Python packages for offline install (inside a package made by make-package.sh)
-LICENSE                           MIT License for DocuPulse IDP
+LICENSE                           MIT License for IDP
 THIRD_PARTY_LICENSES.md           every dependency and its open-source licence
 backend/
   run.py                         start-up (host, port, reload from config/server.ini)
@@ -419,7 +419,7 @@ frontend/src/app/
 <tr><td><code>fingerprint</code> (template)</td><td>Letterhead text of the sample, used to recognise similar documents</td></tr>
 </table>
 <h3 id="lookup">6.1 Lookup API (a template's own endpoint)</h3>
-<p>In Templates → <i>Edit</i> (pencil) → <b>API</b>, an administrator can publish a lookup endpoint for the template. Other applications then find documents of that template and read their fields as JSON, without knowing DocuPulse's document model.</p>
+<p>In Templates → <i>Edit</i> (pencil) → <b>API</b>, an administrator can publish a lookup endpoint for the template. Other applications then find documents of that template and read their fields as JSON, without knowing IDP's document model.</p>
 <ul>
   <li><b>Endpoint name</b>: suggested from the template name (<i>US Passport Details</i> → <code>getUsPassportDetails</code>) until you type your own. It starts with a letter, uses letters, digits and <code>_</code> (3–64 characters) and is unique across active templates, ignoring case. Stored in <code>custom_schemas.api_endpoint</code> / <code>api_enabled</code>.</li>
   <li><b>Search keys</b>: tick <i>Search</i> on each field that may be looked up (stored as <code>api_search</code> on the field). The query parameter is the field name in camelCase (<code>last_name</code> → <code>lastName</code>; the field name itself also works). Lookup by <code>documentId</code> is always available. A field whose parameter would be <code>documentId</code>, <code>limit</code> or <code>offset</code> (e.g. a field named <code>document_id</code>) cannot be a search key; rename it (e.g. <code>reference_number</code>).</li>
@@ -495,7 +495,7 @@ frontend/src/app/
 <tr><td>LDAP</td><td>LDAPS or StartTLS with certificate validation; search input escaped (no LDAP injection); empty passwords refused (no anonymous bind); bind password masked</td></tr>
 <tr><td>Isolation</td><td>Every document endpoint checks <code>owner_id</code>; others' documents look non-existent (404)</td></tr>
 <tr><td>Admin surfaces</td><td>Templates, users, sign-in settings, API keys, webhooks, <code>/docs</code> and <code>/openapi.json</code> require the admin role</td></tr>
-<tr><td>Webhooks</td><td><code>X-DocuPulse-Signature: sha256=HMAC(secret, body)</code>; the secret itself is never sent</td></tr>
+<tr><td>Webhooks</td><td><code>X-IDP-Signature: sha256=HMAC(secret, body)</code> (and <code>X-IDP-Event</code>); the secret itself is never sent. The same values also go out as <code>X-DocuPulse-Signature</code> / <code>X-DocuPulse-Event</code>, the headers' names before the product was renamed, so receivers built earlier keep working</td></tr>
 <tr><td>Uploads</td><td>Extension allow-list; the content must match the extension (PDF/PNG/JPEG/TIFF/BMP/WebP signatures, text must be text), so renamed executables or HTML are refused; size limit enforced while reading (and from <code>Content-Length</code> before reading); at most <code>max_pages</code> pages processed; sanitised file names; page-image paths validated (no path traversal)</td></tr>
 <tr><td>Exports</td><td>CSV cells starting with <code>= + - @</code> (other than numbers) are prefixed with <code>'</code>, so a value read from a document cannot run as a spreadsheet formula. Excel files store values as text</td></tr>
 <tr><td>Webhooks</td><td>Destination must be <code>http(s)://</code> without embedded credentials; redirects are not followed</td></tr>
@@ -649,7 +649,7 @@ curl -X POST "http://&lt;server&gt;:8000/api/v1/lookup/getPassportDetails" -H "X
   <rect class="zone" x="10" y="20" width="1040" height="290" rx="14"/><text x="26" y="40" class="zl">Corporate intranet</text>
   <rect class="box a" x="30" y="120" width="150" height="70" rx="10"/><text x="105" y="150" text-anchor="middle" class="th">Users</text><text x="105" y="170" text-anchor="middle" class="t2">browsers</text>
   <rect class="box" x="230" y="110" width="170" height="90" rx="10"/><text x="315" y="140" text-anchor="middle" class="th">Reverse proxy</text><text x="315" y="160" text-anchor="middle" class="t2">HTTPS :443 · TLS cert</text><text x="315" y="176" text-anchor="middle" class="t2">upload limit ≥ 26 MB</text>
-  <rect class="box c" x="450" y="90" width="220" height="130" rx="10"/><text x="560" y="118" text-anchor="middle" class="th">App server</text><text x="560" y="138" text-anchor="middle" class="t2">Python 3.12 · DocuPulse :8000</text><text x="560" y="156" text-anchor="middle" class="t2">4 vCPU · 8 GB RAM</text><text x="560" y="174" text-anchor="middle" class="t2">50 GB+ disk for storage/</text><text x="560" y="192" text-anchor="middle" class="t2">systemd / Windows service</text>
+  <rect class="box c" x="450" y="90" width="220" height="130" rx="10"/><text x="560" y="118" text-anchor="middle" class="th">App server</text><text x="560" y="138" text-anchor="middle" class="t2">Python 3.12 · IDP :8000</text><text x="560" y="156" text-anchor="middle" class="t2">4 vCPU · 8 GB RAM</text><text x="560" y="174" text-anchor="middle" class="t2">50 GB+ disk for storage/</text><text x="560" y="192" text-anchor="middle" class="t2">systemd / Windows service</text>
   <rect class="box y" x="730" y="60" width="160" height="70" rx="10"/><text x="810" y="90" text-anchor="middle" class="th">SQL Server</text><text x="810" y="110" text-anchor="middle" class="t2">:1433 (or Postgres :5432)</text>
   <rect class="box g" x="730" y="160" width="160" height="70" rx="10"/><text x="810" y="190" text-anchor="middle" class="th">Domain controllers</text><text x="810" y="210" text-anchor="middle" class="t2">LDAPS :636</text>
   <rect class="box" x="920" y="60" width="115" height="70" rx="10"/><text x="977" y="90" text-anchor="middle" class="th">Backups</text><text x="977" y="110" text-anchor="middle" class="t2">DB + storage/</text>
@@ -699,7 +699,7 @@ curl -X POST "http://&lt;server&gt;:8000/api/v1/lookup/getPassportDetails" -H "X
 <pre>build/mac-linux/make-package.sh windows 3.12            # Windows server, Python 3.12, with the SQL Server driver (pymssql)
 build/mac-linux/make-package.sh linux 3.12 pymssql      # Linux server
 build/mac-linux/make-package.sh linux 3.12 "psycopg[binary]"   # Linux server with PostgreSQL</pre>
-<p>It writes <code>../IDP_dist/DocuPulse-IDP-&lt;version&gt;-&lt;target&gt;/</code> and a <code>.zip</code> of it (about 160 MB for Windows), next to the project folder, without changing the project:</p>
+<p>It writes <code>../IDP_dist/IDP-&lt;version&gt;-&lt;target&gt;/</code> and a <code>.zip</code> of it (about 160 MB for Windows), next to the project folder, without changing the project:</p>
 <table>
 <tr><th>Included</th><th>Left out</th></tr>
 <tr><td>Source code, the built web UI (<code>frontend/dist</code>), <code>.example</code> config templates, database schema files, install/start/stop scripts, README, licences, an <code>INSTALL.txt</code>, and <code>build/wheels/</code>: every Python package for the target OS and Python version (~158 MB; OCR models are inside)</td><td><code>venv</code>, <code>node_modules</code>, <code>backend/storage</code> (documents, page images, SQLite database, <code>*.bak</code> backups, logs, <code>secret.key</code>, the first-run password file), the live <code>server.ini</code> / <code>database.ini</code> / <code>auth.ini</code> (the server makes its own from the templates), caches</td></tr>
@@ -707,7 +707,7 @@ build/mac-linux/make-package.sh linux 3.12 "psycopg[binary]"   # Linux server wi
 <p>The Python version must match the one installed on the server. The target needs no internet and no Node.js. On <b>Windows</b> the OCR engine (ONNX Runtime) needs the <b>Microsoft Visual C++ Redistributable 2015–2022 (x64)</b>, present on most servers; copy its installer along if not. No other system libraries are needed (the headless OpenCV build is used).</p>
 
 <h3>11.2 Install on the server (no internet)</h3>
-<p>Copy the package (or unzip it) to the server, e.g. <code>C:\DocuPulse</code> or <code>/opt/docupulse</code>, then:</p>
+<p>Copy the package (or unzip it) to the server, e.g. <code>C:\IDP</code> or <code>/opt/idp</code>, then:</p>
 <pre># Linux / macOS (Python 3.12 installed; 3.11 minimum)
 build/mac-linux/install.sh
 
@@ -741,17 +741,17 @@ password =                 ; leave empty and set IDP_DB_PASSWORD instead</pre>
 <p>The same rule applies to passwords an administrator sets for someone (a new local user, or a reset): they are temporary and must be changed at the next sign-in. <code>reset_admin.py</code> on the server sets a password you choose yourself, so it is not temporary.</p>
 
 <h3>11.5 Run as a service</h3>
-<pre># Linux: /etc/systemd/system/docupulse.service
+<pre># Linux: /etc/systemd/system/idp.service
 [Unit]
-Description=DocuPulse IDP
+Description=IDP
 After=network-online.target
 
 [Service]
-User=docupulse
-WorkingDirectory=/opt/docupulse/backend
+User=idp
+WorkingDirectory=/opt/idp/backend
 Environment=IDP_HOST=127.0.0.1 IDP_PORT=8000 IDP_RELOAD=0
-EnvironmentFile=/etc/docupulse.env          # IDP_DB_PASSWORD=… (chmod 600)
-ExecStart=/opt/docupulse/venv/bin/python run.py
+EnvironmentFile=/etc/idp.env          # IDP_DB_PASSWORD=… (chmod 600)
+ExecStart=/opt/idp/venv/bin/python run.py
 Restart=always
 
 [Install]
@@ -924,7 +924,7 @@ server {
   <li><code>data/storage</code> → <code>/app/backend/storage</code>: documents, page images, the SQLite database, <code>secret.key</code>, logs and, on the first start, <code>initial_admin_password.txt</code>.</li>
   <li><code>data/certs</code> → <code>/etc/nginx/certs</code>: <code>server.crt</code> (full chain) and <code>server.key</code>. When missing, a self-signed certificate is created for <code>TLS_SUBJECT_ALT_NAMES</code> (browsers warn until it is trusted). To use your own, replace both files and <code>docker compose restart web</code>.</li>
 </ul>
-<p><b>Build the bundle</b> (Mac or Linux with Docker and internet): <code>build/docker/make-bundle.sh</code> (default <code>linux/amd64</code>, for Intel/AMD NAS models; <code>linux/arm64</code> for ARM). Result: <code>../IDP_dist/DocuPulse-IDP-&lt;version&gt;-docker/</code> with <code>docupulse-idp-images.tar.gz</code>, <code>docker-compose.yml</code>, <code>.env.example</code> and <code>INSTALL.txt</code>.</p>
+<p><b>Build the bundle</b> (Mac or Linux with Docker and internet): <code>build/docker/make-bundle.sh</code> (default <code>linux/amd64</code>, for Intel/AMD NAS models; <code>linux/arm64</code> for ARM). Result: <code>../IDP_dist/IDP-&lt;version&gt;-docker/</code> with <code>docupulse-idp-images.tar.gz</code>, <code>docker-compose.yml</code>, <code>.env.example</code> and <code>INSTALL.txt</code>.</p>
 <p><b>Install on the NAS</b>, in a folder of its own (e.g. <code>/volume1/docker/docupulse-idp</code>):</p>
 <pre>docker load -i docupulse-idp-images.tar.gz
 cp .env.example .env      # PUID/PGID = the folder owner's ids (run: id), ports, TLS_SUBJECT_ALT_NAMES
@@ -947,7 +947,7 @@ cat data/storage/initial_admin_password.txt     # sign in at https://&lt;nas&gt;
 <p>To let people outside the network try it, without opening a port on the router, the compose file has an optional third container, <code>docupulse-idp-tunnel</code> (cloudflared), that keeps an outbound connection to Cloudflare. It is a tunnel of its own, separate from any other on the same NAS. This needs internet and sends traffic through Cloudflare, so it is for testing only; the offline intranet install does not use it.</p>
 <ol>
   <li>Cloudflare dashboard → Zero Trust → Networks → Tunnels → <b>Create a tunnel</b> (type cloudflared). Copy the token from the install command.</li>
-  <li>On the tunnel, add a <b>public hostname</b> (newer dashboards call it a <b>Published application route</b>; not "Hostname routes", which are private-network only) on a domain in your Cloudflare account (e.g. <code>docupulse.example.com</code>), service <code>HTTPS</code> → <code>web:443</code>, and under TLS turn on <b>No TLS Verify</b> (the container's certificate is self-signed; visitors get Cloudflare's trusted certificate).</li>
+  <li>On the tunnel, add a <b>public hostname</b> (newer dashboards call it a <b>Published application route</b>; not "Hostname routes", which are private-network only) on a domain in your Cloudflare account (e.g. <code>idp.example.com</code>), service <code>HTTPS</code> → <code>web:443</code>, and under TLS turn on <b>No TLS Verify</b> (the container's certificate is self-signed; visitors get Cloudflare's trusted certificate).</li>
   <li>On the NAS put the token in <code>.env</code> (<code>CLOUDFLARE_TUNNEL_TOKEN=...</code>, file mode 600), then <code>docker compose --profile public up -d</code>. Stop public access with <code>docker compose stop tunnel</code> (or delete the public hostname in Cloudflare).</li>
   <li>To move it to another address, edit the route's subdomain/domain in Cloudflare and save; the old address stops at once. Nothing on the NAS changes: the app follows the address it is opened on. Only if you set <code>[frontend] frontend_url</code>, <code>[cors] allowed_origins</code> or an Okta redirect URI to the old address, update those and <code>docker compose restart api</code>. Users sign in again on the new address.</li>
 </ol>
@@ -992,7 +992,7 @@ cat data/storage/initial_admin_password.txt     # sign in at https://&lt;nas&gt;
 <tr><td><code>[local_llm] url</code> / <code>model</code> / <code>timeout</code> / <code>max_chars</code></td><td><code>LOCAL_LLM_URL</code> …</td><td>empty / llama3.1:8b / 60 / 12000</td><td>Optional OpenAI-compatible local LLM; empty disables it</td></tr>
 </table>
 <h3 id="branding">Branding: logo, icons and name</h3>
-<p>The logo, the browser-tab icon, the installed-app icons and the product name can be replaced on the web server <b>without rebuilding</b>. Everything is in <code>frontend/dist/branding/</code> (source: <code>frontend/public/branding/</code>, which also has a <code>README.txt</code>) plus three settings files. The shipped files are placeholders with the DocuPulse shield.</p>
+<p>The logo, the browser-tab icon, the installed-app icons and the product name can be replaced on the web server <b>without rebuilding</b>. Everything is in <code>frontend/dist/branding/</code> (source: <code>frontend/public/branding/</code>, which also has a <code>README.txt</code>) plus three settings files. The shipped files are placeholders with the IDP shield.</p>
 <table>
 <tr><th>Replace</th><th>File (same name)</th><th>Format and size</th></tr>
 <tr><td>Logo (sidebar, sign-in, password screen)</td><td><code>branding/logo.svg</code></td><td>Square, shown at 38 px. SVG preferred; or a PNG ≥ 256 px — then set <code>brand.logo</code> in <code>config.js</code> to <code>"branding/logo.png"</code>. If the file is missing, the built-in shield in the theme colours is shown</td></tr>
@@ -1000,9 +1000,10 @@ cat data/storage/initial_admin_password.txt     # sign in at https://&lt;nas&gt;
 <tr><td>Installed-app icons (desktop, Android, Start menu)</td><td><code>branding/icons/icon-&lt;n&gt;.png</code></td><td>PNG, n = 16, 32, 48, 72, 96, 128, 144, 152, 192, 384, 512; transparent corners allowed</td></tr>
 <tr><td>Android adaptive icons</td><td><code>branding/icons/maskable-192.png</code>, <code>maskable-512.png</code></td><td>Square, background colour to the edges, logo within the middle 80 % (the launcher cuts its own shape)</td></tr>
 <tr><td>iPhone / iPad home screen</td><td><code>branding/icons/apple-touch-icon.png</code></td><td>180 × 180 PNG, no transparency (iOS rounds the corners)</td></tr>
-<tr><td>Product name and tagline</td><td><code>config.js</code> → <code>brand: { name, tagline, logo }</code></td><td>Shown in the sidebar, sign-in page and browser-tab titles ("Dashboard · <i>name</i>")</td></tr>
+<tr><td>Product name and tagline</td><td><code>config.js</code> → <code>brand: { name, tagline, logo }</code></td><td>Shown in the sidebar, sign-in page and browser-tab titles ("Dashboard · <i>name</i>"). Shipped as <code>IDP</code> with the tagline <code>Intelligent Document Processing</code>, so the sidebar reads "IDP Intelligent Document Processing"; the installed app is named the same</td></tr>
 <tr><td>Installed-app name and colours</td><td><code>manifest.webmanifest</code></td><td><code>name</code>, <code>short_name</code>, <code>theme_color</code>, <code>background_color</code></td></tr>
 </table>
+<p><b>Former name.</b> Up to version 1.5.0 the product was called DocuPulse. Since 1.5.1 every name people see says IDP. Some internal names keep the old one so existing installs and links keep working: the Docker images, containers, compose project and network (<code>docupulse-idp-*</code>), the image archive <code>docupulse-idp-images.tar.gz</code>, the example database name <code>docupulse</code>, the GitHub repository, and the legacy webhook headers <code>X-DocuPulse-*</code> (sent alongside <code>X-IDP-*</code>).</p>
 <p>Steps: copy the new files over the old ones in <code>frontend/dist/branding/</code> on the server that hosts the UI (also into <code>frontend/public/branding/</code> so the next build keeps them), edit <code>config.js</code> if the name or logo file name changes, then reload the page. No restart is needed: <code>config.js</code>, <code>manifest.webmanifest</code> and everything in <code>branding/</code> are served uncached and are not stored by the offline app. Browsers keep tab icons for a while — press Ctrl+F5 (Cmd+Shift+R) or reopen the tab; installed apps pick up a new icon when the browser next checks the manifest, or after reinstalling.</p>
 <p>One 1024 px PNG is enough to make the set, e.g. with ImageMagick: <code>magick logo-1024.png -resize 512x512 icons/icon-512.png</code> (per size) and <code>magick logo-1024.png -define icon:auto-resize=48,32,16 favicon.ico</code>.</p>
 
@@ -1103,7 +1104,7 @@ cat data/storage/initial_admin_password.txt     # sign in at https://&lt;nas&gt;
 <tr><td><b>OIDC</b></td><td>OpenID Connect, the sign-in protocol used with Okta</td></tr>
 <tr><td><b>LDAPS</b></td><td>LDAP over TLS, port 636</td></tr>
 </table>
-<p style="color:var(--dim);font-size:.8rem;margin-top:40px">Generated for DocuPulse IDP. This page is served by the application itself and needs no internet access.</p>
+<p style="color:var(--dim);font-size:.8rem;margin-top:40px">Generated for IDP. This page is served by the application itself and needs no internet access.</p>
 </main>
 </div>
 

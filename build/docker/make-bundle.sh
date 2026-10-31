@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
-# Builds the Docker images of DocuPulse IDP for a NAS or Linux server and packs them for an offline install:
+# Builds the Docker images of IDP for a NAS or Linux server and packs them for an offline install:
 #
 #   build/docker/make-bundle.sh [platform]      platform: linux/amd64 (default; UGREEN, Synology Intel) | linux/arm64
 #
-# Result: ../IDP_dist/DocuPulse-IDP-<version>-docker/ with docupulse-idp-images.tar.gz (both images),
+# Result: ../IDP_dist/IDP-<version>-docker/ with docupulse-idp-images.tar.gz (both images),
 # docker-compose.yml, .env.example and INSTALL.txt, plus a .zip of that folder. The NAS needs no internet.
 source "$(dirname "$0")/../mac-linux/common.sh"
 
 PLATFORM="${1:-linux/amd64}"
 VERSION="$(cd "$BACKEND" && "$PY" -c 'from app.core.config import settings; print(settings.VERSION)' 2>/dev/null || echo dev)"
-NAME="DocuPulse-IDP-$VERSION-docker"
+NAME="IDP-$VERSION-docker"
 OUT_ROOT="$(dirname "$ROOT")/IDP_dist"
 OUT="$OUT_ROOT/$NAME"
 DOCKER="$ROOT/build/docker"
@@ -34,7 +34,7 @@ docker save "docupulse-idp-api:$VERSION" "docupulse-idp-web:$VERSION" | gzip > "
 cp "$DOCKER/docker-compose.yml" "$OUT/"
 sed "s/^IDP_VERSION=.*/IDP_VERSION=$VERSION/" "$DOCKER/.env.example" > "$OUT/.env.example"
 cat > "$OUT/INSTALL.txt" <<NOTE
-DocuPulse IDP $VERSION — Docker install ($PLATFORM)
+IDP $VERSION — Docker install ($PLATFORM)
 
 1. Copy this folder to the NAS, e.g. /volume1/docker/docupulse-idp (any folder; data/ is created inside it).
 2. In that folder:

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Installs DocuPulse IDP on Mac or Linux: Python environment, packages, and the web UI build.
+# Installs IDP on Mac or Linux: Python environment, packages, and the web UI build.
 #   build/mac-linux/install.sh            uses build/wheels/ if present (offline), else the internet
 # Needs Python 3.11+ (3.12 recommended; set PYTHON=python3.12). Building the UI needs Node.js 22 or 24 (an even, LTS release; Angular does not support odd ones),
 # unless frontend/dist is already there.

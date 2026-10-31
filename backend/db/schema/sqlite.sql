@@ -1,4 +1,4 @@
--- DocuPulse IDP database schema: SQLite
+-- IDP database schema: SQLite
 -- Run automatically on the first server start when the tables do not exist yet.
 -- Statements are separated by semicolons at line ends.
 

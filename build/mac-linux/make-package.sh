@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Builds a clean, portable install package of DocuPulse IDP for another server, next to this folder:
+# Builds a clean, portable install package of IDP for another server, next to this folder:
 #
 #   build/mac-linux/make-package.sh [target] [python-version] [extra packages...]
 #     target:  windows (default) | linux | mac-arm | mac-intel
 #     python:  3.12 (default) or 3.11 — must match the Python installed on the target server
 #     extra:   database driver, e.g. pymssql (SQL Server, the default for windows) or "psycopg[binary]"
 #
-# Result: ../IDP_dist/DocuPulse-IDP-<version>-<target>/ and a .zip of it, containing the source, the built
+# Result: ../IDP_dist/IDP-<version>-<target>/ and a .zip of it, containing the source, the built
 # web UI (frontend/dist), config templates, scripts, docs, and every Python package for the target
 # (build/wheels) so the target needs no internet. Never included: this machine's Python environment,
 # node_modules, documents, databases and backups, logs, secret.key, the first-run password file, and
@@ -26,7 +26,7 @@ case "$TARGET" in
 esac
 
 VERSION="$(cd "$BACKEND" && "$PY" -c 'from app.core.config import settings; print(settings.VERSION)' 2>/dev/null || echo dev)"
-NAME="DocuPulse-IDP-$VERSION-$TARGET"
+NAME="IDP-$VERSION-$TARGET"
 OUT_ROOT="$(dirname "$ROOT")/IDP_dist"
 OUT="$OUT_ROOT/$NAME"
 
@@ -61,7 +61,7 @@ EXTRA=(pip)
 
 # 4. A note for whoever installs it, and the zip
 cat > "$OUT/INSTALL.txt" <<NOTE
-DocuPulse IDP $VERSION — install package for $TARGET (Python $PYVER)
+IDP $VERSION — install package for $TARGET (Python $PYVER)
 
 Needs on the server: Python $PYVER (python.org installer; tick "Add python.exe to PATH" on Windows).
 Windows also needs the Microsoft Visual C++ Redistributable 2015-2022 (x64), used by the OCR engine;

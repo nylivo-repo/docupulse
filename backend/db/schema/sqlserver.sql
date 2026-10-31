@@ -1,4 +1,4 @@
--- DocuPulse IDP database schema: Microsoft SQL Server (2016 or later)
+-- IDP database schema: Microsoft SQL Server (2016 or later)
 -- Run automatically on the first server start when the tables do not exist yet,
 -- or give it to your DBA (sqlcmd / SSMS). Batches are separated by GO lines.
 -- Create the database and login first, e.g.:

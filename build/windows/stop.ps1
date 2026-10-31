@@ -1,4 +1,4 @@
-# Stops the DocuPulse IDP API server started with start.ps1 / start.bat (Windows).
+# Stops the IDP API server started with start.ps1 / start.bat (Windows).
 . (Join-Path $PSScriptRoot 'common.ps1')
 
 $proc = Get-ServerProcess

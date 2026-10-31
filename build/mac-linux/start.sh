@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Starts the DocuPulse IDP API server in the background (Mac / Linux).
+# Starts the IDP API server in the background (Mac / Linux).
 # Settings: backend/config/server.ini and database.ini. Log: backend/storage/logs/server.log
 source "$(dirname "$0")/common.sh"
 
@@ -17,7 +17,7 @@ echo $! >"$PID_FILE"
 
 for _ in $(seq 1 60); do
   if health "$ADDRESS"; then
-    echo "DocuPulse is running at http://$ADDRESS (process $(cat "$PID_FILE"))."
+    echo "IDP is running at http://$ADDRESS (process $(cat "$PID_FILE"))."
     exit 0
   fi
   if ! is_running; then

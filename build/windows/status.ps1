@@ -1,4 +1,4 @@
-# Shows whether the DocuPulse IDP API server is running and answering (Windows).
+# Shows whether the IDP API server is running and answering (Windows).
 . (Join-Path $PSScriptRoot 'common.ps1')
 
 $address = Get-ServerAddress

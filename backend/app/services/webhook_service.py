@@ -38,9 +38,12 @@ class WebhookService:
         signature = hmac.new(secret.encode(), body.encode(), hashlib.sha256).hexdigest()
         headers = {
             "Content-Type": "application/json",
+            "X-IDP-Event": event,
+            "X-IDP-Signature": f"sha256={signature}",
+            # Former product name; still sent so receivers built before the rename keep working
             "X-DocuPulse-Event": event,
             "X-DocuPulse-Signature": f"sha256={signature}",
-            "User-Agent": "DocuPulse-IDP-Webhook-Dispatcher/1.0"
+            "User-Agent": "IDP-Webhook-Dispatcher/1.0"
         }
         
         status_code = 0

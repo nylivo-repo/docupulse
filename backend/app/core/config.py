@@ -43,7 +43,7 @@ def _bool(value: str) -> bool:
 
 class Settings(BaseModel):
     API_V1_STR: str = "/api/v1"
-    VERSION: str = "1.5.0"
+    VERSION: str = "1.5.1"
 
     HOST: str = _get("IDP_HOST", "server", "host", "127.0.0.1")
     PORT: int = int(_get("IDP_PORT", "server", "port", "8000"))

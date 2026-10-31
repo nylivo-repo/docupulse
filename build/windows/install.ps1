@@ -1,4 +1,4 @@
-# Installs DocuPulse IDP on Windows: Python environment, packages, and the web UI build.
+# Installs IDP on Windows: Python environment, packages, and the web UI build.
 #   build\windows\install.bat         (or: powershell -ExecutionPolicy Bypass -File build\windows\install.ps1)
 # Uses build\wheels\ if present (offline), else the internet. Needs Python 3.11+, 3.12 recommended ("py" launcher or python.exe).
 # Building the UI needs Node.js 22 or 24 (an even, LTS release), unless frontend\dist is already there.

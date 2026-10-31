@@ -91,7 +91,7 @@ const EVENTS = [
         <div class="form-grid">
           <div>
             <label class="lbl" for="wh-url">Payload Destination URL *</label>
-            <input id="wh-url" name="url" type="url" placeholder="https://your-api.com/webhooks/docupulse"
+            <input id="wh-url" name="url" type="url" placeholder="https://your-api.com/webhooks/idp"
               [(ngModel)]="url" class="field-input" required />
           </div>
           <div>

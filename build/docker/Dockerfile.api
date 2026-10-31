@@ -1,4 +1,4 @@
-# DocuPulse IDP API image (FastAPI on Python 3.12). Built by build/docker/make-bundle.sh from the project root:
+# IDP API image (FastAPI on Python 3.12). Built by build/docker/make-bundle.sh from the project root:
 #   docker build -f build/docker/Dockerfile.api -t docupulse-idp-api .
 # Runs with no internet: every package and the OCR models are inside the image.
 FROM python:3.12-slim-bookworm

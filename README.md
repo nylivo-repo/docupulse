@@ -1,4 +1,4 @@
-# DocuPulse IDP
+# IDP
 
 Intelligent document processing that runs fully offline: no cloud services, no internet calls,
 no LLM required. Upload any PDF, scan, photo or text file and get structured fields, with a
@@ -131,7 +131,9 @@ the device. Installing needs the UI on `https://` (or `localhost`); on plain `ht
 normal web page.
 
 Branding: replace the logo, browser-tab icon and app icons in `frontend/dist/branding/` (same file names;
-sizes in `branding/README.txt` and `/docs` section 12 "Branding") and the name in `config.js` → `brand`.
+sizes in `branding/README.txt` and `/docs` section 12 "Branding") and the name and tagline in `config.js` → `brand`
+(shipped as "IDP" over "Intelligent Document Processing"). The product was called DocuPulse up to 1.5.0; Docker
+image and container names, the example database name and the repository still use the old name (see `/docs` section 12).
 No rebuild or restart; reload the page.
 
 Themes: the user menu → *Appearance* switches Light / Dark / Auto (follows the device) and six colour
@@ -178,7 +180,7 @@ Build a clean package instead, on a machine with internet:
 build/mac-linux/make-package.sh windows 3.12      # Windows, Python 3.12, SQL Server driver included
 ```
 
-It creates `../IDP_dist/DocuPulse-IDP-<version>-windows/` and a `.zip` (~160 MB, almost all of it the Windows
+It creates `../IDP_dist/IDP-<version>-windows/` and a `.zip` (~160 MB, almost all of it the Windows
 Python packages for an offline install). Copy that to the server, install Python 3.12 (and the Microsoft Visual
 C++ Redistributable x64 if missing), then run `build\windows\install.bat` and `build\windows\start.bat`.
 Targets: `windows`, `linux`, `mac-arm`, `mac-intel`; see `/docs` section 11.1.
@@ -192,7 +194,7 @@ on a machine with Docker and internet, then copy one folder to the NAS:
 build/docker/make-bundle.sh            # linux/amd64 (Intel NAS); linux/arm64 for ARM models
 ```
 
-It creates `../IDP_dist/DocuPulse-IDP-<version>-docker/` (images, `docker-compose.yml`, `.env.example`,
+It creates `../IDP_dist/IDP-<version>-docker/` (images, `docker-compose.yml`, `.env.example`,
 `INSTALL.txt`). On the NAS: `docker load -i docupulse-idp-images.tar.gz`, `cp .env.example .env`,
 `docker compose up -d`, then open `https://<nas>:7443`. Config, documents, database, keys and certificates
 stay in `data/` next to the compose file. Full guide: `/docs` section 11.10.
@@ -210,7 +212,7 @@ override the files; the full reference is in `/docs`, section 12.
 
 ## Licences
 
-DocuPulse IDP is released under the [MIT License](LICENSE). Every dependency is open source; see [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md)
+IDP is released under the [MIT License](LICENSE). Every dependency is open source; see [THIRD_PARTY_LICENSES.md](THIRD_PARTY_LICENSES.md)
 (regenerate with `venv/bin/python build/tools/third_party_licenses.py`).
 
 ## Notes

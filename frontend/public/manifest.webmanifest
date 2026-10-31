@@ -1,6 +1,6 @@
 {
-  "name": "DocuPulse IDP",
-  "short_name": "DocuPulse",
+  "name": "IDP Intelligent Document Processing",
+  "short_name": "IDP",
   "display": "standalone",
   "scope": "./",
   "start_url": "./",
@@ -66,7 +66,7 @@
       "purpose": "maskable"
     }
   ],
-  "description": "Offline intelligent document processing",
+  "description": "IDP Intelligent Document Processing, offline",
   "theme_color": "#0c101c",
   "background_color": "#080b12",
   "orientation": "any"

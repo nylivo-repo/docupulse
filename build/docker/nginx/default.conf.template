@@ -1,4 +1,4 @@
-# DocuPulse IDP behind Nginx. ${...} values come from the container environment (docker-compose.yml / .env).
+# IDP behind Nginx. ${...} values come from the container environment (docker-compose.yml / .env).
 server_tokens off;
 
 # HSTS only with a trusted certificate (HSTS_HEADER in .env); an empty value sends no header

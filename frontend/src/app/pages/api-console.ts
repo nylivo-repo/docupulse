@@ -162,7 +162,7 @@ const ENDPOINTS = [
     <div class="glass-card banner">
       <div>
         <h2>Developer API Explorer &amp; SDKs</h2>
-        <p>Every capability of DocuPulse IDP is exposed via high-performance REST endpoints with OpenAPI v3 specification.</p>
+        <p>Every capability of IDP is exposed via high-performance REST endpoints with OpenAPI v3 specification.</p>
       </div>
       <a [href]="docsUrl" target="_blank" rel="noreferrer" class="btn btn-primary">
         <app-icon [icon]="ExternalLink" [size]="16" />

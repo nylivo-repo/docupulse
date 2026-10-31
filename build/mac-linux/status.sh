@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Shows whether the DocuPulse IDP API server is running and answering (Mac / Linux).
+# Shows whether the IDP API server is running and answering (Mac / Linux).
 source "$(dirname "$0")/common.sh"
 
 ADDRESS="$(server_address)"

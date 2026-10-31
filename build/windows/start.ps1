@@ -1,4 +1,4 @@
-# Starts the DocuPulse IDP API server in the background (Windows).
+# Starts the IDP API server in the background (Windows).
 # Settings: backend\config\server.ini and database.ini. Logs: backend\storage\logs\server.log / server.err.log
 . (Join-Path $PSScriptRoot 'common.ps1')
 
@@ -15,7 +15,7 @@ $proc = Start-Process @startArgs
 Set-Content -Path $PidFile -Value $proc.Id
 
 for ($i = 0; $i -lt 60; $i++) {
-    if (Test-Health $address) { Write-Host "DocuPulse is running at http://$address (process $($proc.Id))."; exit 0 }
+    if (Test-Health $address) { Write-Host "IDP is running at http://$address (process $($proc.Id))."; exit 0 }
     if ($proc.HasExited) {
         Write-Host 'The server stopped during start-up. Last log lines:'
         Get-Content $ErrFile -Tail 20

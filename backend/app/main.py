@@ -36,14 +36,14 @@ log = logging.getLogger("idp")
 async def lifespan(_app):
     await on_startup()
     yield
-    log.info("DocuPulse IDP stopping")
+    log.info("IDP stopping")
 
 
 app = FastAPI(
     lifespan=lifespan,
-    title="DocuPulse IDP API - Intelligent Document Processing Platform",
+    title="IDP Intelligent Document Processing API",
     description="""
-# DocuPulse IDP API
+# IDP API
 
 Offline intelligent document processing: text-layer and local OCR extraction, rule-based pipelines,
 user-defined templates, human-in-the-loop review and webhooks. Makes no internet calls.
@@ -91,7 +91,7 @@ app.include_router(auth_router)
 def health_check():
     return {
         "status": "healthy",
-        "service": "DocuPulse IDP API",
+        "service": "IDP API",
         "version": settings.VERSION,
         "engine": "Text layer + local OCR + rule-based pipelines",
         "ocr_engine": LocalOCR.engine_name(),
@@ -129,7 +129,7 @@ def openapi_spec(request: Request):
 
 
 async def on_startup():
-    log.info("DocuPulse IDP %s starting", settings.VERSION)
+    log.info("IDP %s starting", settings.VERSION)
     init_db()
     apply_file_settings()  # sign-in method from config/auth.ini (local unless changed)
     ensure_bootstrap_admin()

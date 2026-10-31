@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Stops the DocuPulse IDP API server started with start.sh (Mac / Linux).
+# Stops the IDP API server started with start.sh (Mac / Linux).
 source "$(dirname "$0")/common.sh"
 
 if ! is_running; then

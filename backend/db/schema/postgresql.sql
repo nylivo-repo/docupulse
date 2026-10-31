@@ -1,4 +1,4 @@
--- DocuPulse IDP database schema: PostgreSQL (11 or later)
+-- IDP database schema: PostgreSQL (11 or later)
 -- Run automatically on the first server start when the tables do not exist yet,
 -- or give it to your DBA to run by hand. Create the database and login first, e.g.:
 --   CREATE DATABASE docupulse;  CREATE USER idp_app WITH PASSWORD '...';

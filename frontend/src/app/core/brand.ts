@@ -11,8 +11,8 @@ declare global {
 }
 const cfg = window.IDP_CONFIG?.brand || {};
 export const BRAND = {
-  name: cfg.name || 'DocuPulse',
-  tagline: cfg.tagline ?? 'Document processing',
+  name: cfg.name || 'IDP',
+  tagline: cfg.tagline ?? 'Intelligent Document Processing',
   logo: cfg.logo ?? 'branding/logo.svg',
 };
 

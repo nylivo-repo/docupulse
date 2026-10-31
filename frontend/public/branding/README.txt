@@ -1,4 +1,4 @@
-DocuPulse branding: replace these files with your own, keeping the same names. No rebuild is needed:
+IDP branding: replace these files with your own, keeping the same names. No rebuild is needed:
 copy them into frontend/dist/branding/ (or this folder before a build), then reload the page (Ctrl+F5).
 
   logo.svg              Logo in the sidebar, sign-in page and password screen. Square, shown at 38 px.
