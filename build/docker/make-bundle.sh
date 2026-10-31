@@ -3,7 +3,7 @@
 #
 #   build/docker/make-bundle.sh [platform]      platform: linux/amd64 (default; UGREEN, Synology Intel) | linux/arm64
 #
-# Result: ../IDP_dist/IDP-<version>-docker/ with docupulse-idp-images.tar.gz (both images),
+# Result: ../IDP_dist/IDP-<version>-docker/ with idp-images.tar.gz (both images),
 # docker-compose.yml, .env.example and INSTALL.txt, plus a .zip of that folder. The NAS needs no internet.
 source "$(dirname "$0")/../mac-linux/common.sh"
 
@@ -22,23 +22,23 @@ elif [[ ! -f "$ROOT/frontend/dist/index.html" ]]; then
 fi
 
 for part in api web; do
-  echo "Building docupulse-idp-$part:$VERSION for $PLATFORM"
+  echo "Building idp-$part:$VERSION for $PLATFORM"
   docker buildx build --platform "$PLATFORM" --load -f "$DOCKER/Dockerfile.$part" \
-    -t "docupulse-idp-$part:$VERSION" -t "docupulse-idp-$part:latest" "$ROOT"
+    -t "idp-$part:$VERSION" -t "idp-$part:latest" "$ROOT"
 done
 
 rm -rf "$OUT" "$OUT_ROOT/$NAME.zip"
 mkdir -p "$OUT"
 echo "Saving the images"
-docker save "docupulse-idp-api:$VERSION" "docupulse-idp-web:$VERSION" | gzip > "$OUT/docupulse-idp-images.tar.gz"
+docker save "idp-api:$VERSION" "idp-web:$VERSION" | gzip > "$OUT/idp-images.tar.gz"
 cp "$DOCKER/docker-compose.yml" "$OUT/"
 sed "s/^IDP_VERSION=.*/IDP_VERSION=$VERSION/" "$DOCKER/.env.example" > "$OUT/.env.example"
 cat > "$OUT/INSTALL.txt" <<NOTE
 IDP $VERSION — Docker install ($PLATFORM)
 
-1. Copy this folder to the NAS, e.g. /volume1/docker/docupulse-idp (any folder; data/ is created inside it).
+1. Copy this folder to the NAS, e.g. /volume1/docker/idp (any folder; data/ is created inside it).
 2. In that folder:
-     docker load -i docupulse-idp-images.tar.gz
+     docker load -i idp-images.tar.gz
      cp .env.example .env        (set PUID/PGID to the folder owner's ids, ports, TLS_SUBJECT_ALT_NAMES)
      docker compose up -d
    (UGOS Docker app: Project → Create, pick this folder; load the images first under Image → Import.)

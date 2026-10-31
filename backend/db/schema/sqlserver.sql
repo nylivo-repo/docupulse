@@ -2,8 +2,8 @@
 -- Run automatically on the first server start when the tables do not exist yet,
 -- or give it to your DBA (sqlcmd / SSMS). Batches are separated by GO lines.
 -- Create the database and login first, e.g.:
---   CREATE DATABASE docupulse;  CREATE LOGIN idp_app WITH PASSWORD = '...';
---   USE docupulse; CREATE USER idp_app FOR LOGIN idp_app; ALTER ROLE db_owner ADD MEMBER idp_app;
+--   CREATE DATABASE idp;  CREATE LOGIN idp_app WITH PASSWORD = '...';
+--   USE idp; CREATE USER idp_app FOR LOGIN idp_app; ALTER ROLE db_owner ADD MEMBER idp_app;
 
 SET QUOTED_IDENTIFIER ON;
 GO

@@ -6,7 +6,7 @@
   },
   "newProjectRoot": "projects",
   "projects": {
-    "docupulse-ui": {
+    "idp-ui": {
       "projectType": "application",
       "schematics": {},
       "root": "",
@@ -78,10 +78,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "docupulse-ui:build:production"
+              "buildTarget": "idp-ui:build:production"
             },
             "development": {
-              "buildTarget": "docupulse-ui:build:development"
+              "buildTarget": "idp-ui:build:development"
             }
           },
           "defaultConfiguration": "development",

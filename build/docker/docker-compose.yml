@@ -7,13 +7,13 @@
 #                 and on first start initial_admin_password.txt
 #   data/certs    server.crt + server.key (self-signed one created if missing)
 # Settings are in .env (copy .env.example). Start: docker compose up -d
-name: docupulse-idp
+name: idp
 
 services:
   api:
-    image: docupulse-idp-api:${IDP_VERSION:-latest}
+    image: idp-api:${IDP_VERSION:-latest}
     pull_policy: never   # images come from the bundle (docker load); the NAS needs no internet
-    container_name: docupulse-idp-api
+    container_name: idp-api
     restart: unless-stopped
     environment:
       PUID: ${PUID:-1000}
@@ -32,9 +32,9 @@ services:
     # no published port: only reachable through web
 
   web:
-    image: docupulse-idp-web:${IDP_VERSION:-latest}
+    image: idp-web:${IDP_VERSION:-latest}
     pull_policy: never   # images come from the bundle (docker load); the NAS needs no internet
-    container_name: docupulse-idp-web
+    container_name: idp-web
     restart: unless-stopped
     depends_on:
       api:
@@ -66,7 +66,7 @@ services:
   # (CLOUDFLARE_TUNNEL_TOKEN), and add a public hostname -> service https://web:443 with "No TLS Verify" on.
   tunnel:
     image: ${CLOUDFLARED_IMAGE:-cloudflare/cloudflared:latest}
-    container_name: docupulse-idp-tunnel
+    container_name: idp-tunnel
     profiles: ["public"]
     restart: unless-stopped
     command: tunnel --no-autoupdate run
@@ -80,7 +80,7 @@ services:
 
 networks:
   idp:
-    name: docupulse-idp
+    name: idp
     ipam:
       config:
         - subnet: ${IDP_SUBNET:-172.30.80.0/24}

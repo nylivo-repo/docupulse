@@ -1,7 +1,7 @@
 # IDP web image: Nginx serves the built Angular UI over HTTPS and forwards /api, /docs and
 # /openapi.json to the API container. Built by build/docker/make-bundle.sh from the project root
 # (frontend/dist must be built first):
-#   docker build -f build/docker/Dockerfile.web -t docupulse-idp-web .
+#   docker build -f build/docker/Dockerfile.web -t idp-web .
 FROM nginx:1.28-alpine
 
 # openssl makes a self-signed certificate on the first start when none is supplied

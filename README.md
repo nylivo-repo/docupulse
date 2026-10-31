@@ -132,8 +132,8 @@ normal web page.
 
 Branding: replace the logo, browser-tab icon and app icons in `frontend/dist/branding/` (same file names;
 sizes in `branding/README.txt` and `/docs` section 12 "Branding") and the name and tagline in `config.js` → `brand`
-(shipped as "IDP" over "Intelligent Document Processing"). The product was called DocuPulse up to 1.5.0; Docker
-image and container names, the example database name and the repository still use the old name (see `/docs` section 12).
+(shipped as "IDP" over "Intelligent Document Processing"). The product was called DocuPulse up to 1.5.0; moving a
+Docker install from the `docupulse-idp` names is described in `/docs` section 15 (Upgrades).
 No rebuild or restart; reload the page.
 
 Themes: the user menu → *Appearance* switches Light / Dark / Auto (follows the device) and six colour
@@ -195,7 +195,7 @@ build/docker/make-bundle.sh            # linux/amd64 (Intel NAS); linux/arm64 fo
 ```
 
 It creates `../IDP_dist/IDP-<version>-docker/` (images, `docker-compose.yml`, `.env.example`,
-`INSTALL.txt`). On the NAS: `docker load -i docupulse-idp-images.tar.gz`, `cp .env.example .env`,
+`INSTALL.txt`). On the NAS: `docker load -i idp-images.tar.gz`, `cp .env.example .env`,
 `docker compose up -d`, then open `https://<nas>:7443`. Config, documents, database, keys and certificates
 stay in `data/` next to the compose file. Full guide: `/docs` section 11.10.
 For outside testers, an optional Cloudflare tunnel container (`docker compose --profile public up -d`, token in
